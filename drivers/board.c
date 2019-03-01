@@ -19,6 +19,7 @@
 #include "gpio.h"
 #include "pwm_bsp.h"
 #include "rtc_bsp.h"
+#include "TH_SENSOR_BSP.h"
 
 /**
  * @addtogroup STM32
@@ -107,7 +108,7 @@ void rt_hw_board_init()
 int hw_drivers_init(void)
 {
 
-   drv_adc_dma_init(); //模拟输入初始化
+    drv_adc_dma_init(); //模拟输入初始化
 
     //    drv_dio_init(); //数字输入输出初始化
 
@@ -115,11 +116,11 @@ int hw_drivers_init(void)
 
     drv_i2c_init(); //IIC初始化
 
-    //    AM_Init(); //AM Sensor init
+    AM_Init(); //AM Sensor init
 
-   drv_rtc_init(); //RTC初始化
+    drv_rtc_init(); //RTC初始化
 
-  //  Drv_CNT_Pluse_Init(); //脉冲计数
+    Drv_CNT_Pluse_Init(); //脉冲计数
 
     //	xPort_Usart_Init(UART_HEAT);//加热器
     //	drv_led_init();

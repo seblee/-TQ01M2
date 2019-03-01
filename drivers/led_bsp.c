@@ -17,7 +17,7 @@
 #include "port.h"
 #include "sys_conf.h"
 
-#define led1_rcc RCC_APB2Periph_GPIOC
+#define led1_rcc RCC_AHB1Periph_GPIOC
 #define led1_gpio GPIOC
 #define led1_pin (GPIO_Pin_13)
 
@@ -28,15 +28,17 @@
   */
 void drv_led_init(void)
 {
-//    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure;
+    RCC_AHB1PeriphClockCmd(led1_rcc, ENABLE); //使能 时钟
 
-//    RCC_APB2PeriphClockCmd(led1_rcc, ENABLE);
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-
-//    GPIO_InitStructure.GPIO_Pin = led1_pin;
-//    GPIO_Init(led1_gpio, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = led1_pin;
+    GPIO_Init(led1_gpio, &GPIO_InitStructure);
+    GPIO_SetBits(led1_gpio, led1_pin);
 }
 
 /**
@@ -81,15 +83,16 @@ void led_off(uint32_t n)
 ******************************************************************/
 void Led_Gpio_Init(void)
 {
-//    GPIO_InitTypeDef GPIO_InitStructure;
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    GPIO_InitTypeDef GPIO_InitStructure;
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE); //使能 时钟
 
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-//    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 
-//    //	  GPIO_SetBits(GPIOB, GPIO_Pin_15);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 /*****************************************************************
 //   ws2811 LED显示 的 驱动 函数

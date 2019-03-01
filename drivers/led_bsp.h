@@ -49,11 +49,11 @@ typedef struct
     Color_st Color;
 } Temp_Color_st;
 
-void LED_SPI_LowLevel_Init(void);
-void LED_SPI_WriteByte(uint16_t Data);
-void LED_SPI_SendBits(uint8_t bits);
-void LED_SPI_SendPixel(Color_st pixel);
-ErrorStatus LED_SPI_Update(Color_st buffer[], uint32_t length);
-void PixelRound(uint8_t r, uint8_t g, uint8_t b, uint16_t pluse);
+// void LED_SPI_LowLevel_Init(void);
+// void LED_SPI_WriteByte(uint16_t Data);
+// void LED_SPI_SendBits(uint8_t bits);
+// void LED_SPI_SendPixel(Color_st pixel);
+// ErrorStatus LED_SPI_Update(Color_st buffer[], uint32_t length);
+// void PixelRound(uint8_t r, uint8_t g, uint8_t b, uint16_t pluse);
 
 #endif

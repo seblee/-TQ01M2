@@ -17,7 +17,7 @@ void Delay_ms(unsigned long u32us)
 
     while (u32us--)
     {
-        for (i = 0; i < 5000; i++)
+        for (i = 0; i < 10000; i++)
             ;
     }
 }
@@ -28,7 +28,7 @@ void Delay_us(unsigned long u32us)
 
     while (u32us--)
     {
-        for (i = 0; i < 9; i++)
+        for (i = 0; i < 32; i++)
             ;
     }
 }
@@ -36,7 +36,7 @@ void Delay_us(unsigned long u32us)
 void Delay05us(void)
 {
     unsigned char i;
-    for (i = 0; i < 1; i++)
+    for (i = 0; i < 2; i++)
         ;
 }
 

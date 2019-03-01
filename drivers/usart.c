@@ -92,7 +92,7 @@ struct stm32_uart
         rt_size_t last_recv_index;
     } dma;
 #endif /* RT_SERIAL_USING_DMA */ 
-};
+}; 
  
 #ifdef RT_SERIAL_USING_DMA 
 static void DMA_Configuration(struct rt_serial_device *serial);

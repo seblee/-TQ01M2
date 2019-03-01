@@ -1,6 +1,6 @@
 #include <rtthread.h>
 #include "Delay.h"
-#include "Th_SENSOR_BSP.h"
+#include "TH_SENSOR_BSP.h"
 #include "string.h"
 #include "user_mb_app.h"
 #include "stdlib.h"
@@ -8,25 +8,21 @@
 
 void AM_BUS_Config(void)
 {
-//    GPIO_InitTypeDef GPIO_InitStructure;
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    GPIO_InitTypeDef GPIO_InitStructure;
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE); //使能 时钟
 
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-//    GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-//    //Configure BUS pins: SDA_00
-//    GPIO_InitStructure.GPIO_Pin = II_AM_SDA_00_Pin;
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//    GPIO_Init(II_AM_SDA_00_GPIO, &GPIO_InitStructure);
-
-//    GPIO_SetBits(II_AM_SDA_00_GPIO, II_AM_SDA_00_Pin);
-
-//    GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//    GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
-
-//    GPIO_SetBits(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    //Configure BUS pins: SDA_00
+    GPIO_InitStructure.GPIO_Pin = II_AM_SDA_00_Pin;
+    GPIO_Init(II_AM_SDA_00_GPIO, &GPIO_InitStructure);
+    GPIO_SetBits(II_AM_SDA_00_GPIO, II_AM_SDA_00_Pin);
+    //Configure BUS pins: SDA_01
+    GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
+    GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
+    GPIO_SetBits(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
 }
 
 void AM_Init(void)
@@ -94,25 +90,28 @@ static uint8_t AM_SDA_READ(uint8_t u8SN)
 }
 static void AM_SDA_OUT(uint8_t u8SN)
 {
-//    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure;
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE); //使能 时钟
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     switch (u8SN)
     {
-//    case 0x00:
-//    {
-//        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_00_Pin;
-//        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//        GPIO_Init(II_AM_SDA_00_GPIO, &GPIO_InitStructure);
-//    }
-//    break;
-//    case 0x01:
-//    {
-//        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
-//        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//        GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
-//    }
-//    break;
+    case 0x00:
+    {
+        //Configure BUS pins: SDA_00
+        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_00_Pin;
+        GPIO_Init(II_AM_SDA_00_GPIO, &GPIO_InitStructure);
+    }
+    break;
+    case 0x01:
+    {
+        //Configure BUS pins: SDA_01
+        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
+        GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
+    }
+    break;
     default:
         break;
     }
@@ -120,24 +119,25 @@ static void AM_SDA_OUT(uint8_t u8SN)
 
 static void AM_SDA_IN(uint8_t u8SN)
 {
-//    GPIO_InitTypeDef GPIO_InitStructure;
-
+    GPIO_InitTypeDef GPIO_InitStructure;
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE); //使能 时钟
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     switch (u8SN)
     {
     case 0x00:
     {
-//        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_00_Pin;
-//        //				GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU ;
-//        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-//        GPIO_Init(II_AM_SDA_00_GPIO, &GPIO_InitStructure);
+        //Configure BUS pins: SDA_00
+        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_00_Pin;
+        GPIO_Init(II_AM_SDA_00_GPIO, &GPIO_InitStructure);
     }
     break;
     case 0x01:
     {
-//        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
-//        //				GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU ;
-//        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-//        GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
+        //Configure BUS pins: SDA_01
+        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
+        GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
     }
     break;
     default:
@@ -228,7 +228,7 @@ uint8_t Read_Sensor(uint16_t *u16TH_Buff, uint8_t u8SN)
         j = 0;
         while ((!AM_SDA_READ(u8SN))) //判断从机发出 80us 的低电平响应信号是否结束
         {
-            if (++j >= 500) //防止进入死循环
+            if (++j >= 1000) //防止进入死循环
             {
                 Sensor_ErrorFlag = 1;
                 break;
@@ -238,7 +238,7 @@ uint8_t Read_Sensor(uint16_t *u16TH_Buff, uint8_t u8SN)
         j = 0;
         while (AM_SDA_READ(u8SN)) //判断从机是否发出 80us 的高电平，如发出则进入数据接收状态
         {
-            if (++j >= 800) //防止进入死循环
+            if (++j >= 1600) //防止进入死循环
             {
                 Sensor_ErrorFlag = 1;
                 break;
@@ -254,7 +254,7 @@ uint8_t Read_Sensor(uint16_t *u16TH_Buff, uint8_t u8SN)
 
         temp = (uint8_t)(Humi_H + Humi_L + Temp_H + Temp_L); //只取低8位
                                                              //			rt_kprintf("Humi_H=%d,Humi_L=%d,Temp_H=%d,Temp_L=%d,Temp_CAL=%d,temp=%d,\n",Humi_H,Humi_L,Temp_H,Temp_L,Temp_CAL,temp);
-        if (Temp_CAL == temp)                                //如果校验成功，往下运行
+        if (Temp_CAL == temp) //如果校验成功，往下运行
         {
             Sensor_AnswerFlag |= 0x08;
 
@@ -282,8 +282,8 @@ uint8_t Read_Sensor(uint16_t *u16TH_Buff, uint8_t u8SN)
             {
                 i16Temprature = -400;
             }
-            u16TH_Buff[0] = (uint16_t)i16Temprature; //温度
-            u16TH_Buff[1] = (uint16_t)u16Humi;       //湿度
+            u16TH_Buff[0] = (uint16_t)i16Temprature;                   //温度
+            u16TH_Buff[1] = (uint16_t)u16Humi;                         //湿度
                                                      // rt_kprintf("\r\nTemprature:  %.1f  ℃\r\n",i16Temprature); //显示温度
                                                      // rt_kprintf("Humi:  %.1f  %%RH\r\n",u16Humi);//显示湿度
         }

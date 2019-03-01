@@ -757,11 +757,6 @@
               <FileType>1</FileType>
               <FilePath>packages\cJSON-v1.0.2\cJSON.c</FilePath>
             </File>
-            <File>
-              <FileName>cJSON_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>packages\cJSON-v1.0.2\cJSON_port.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
