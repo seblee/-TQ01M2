@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "pwm_bsp.h": "c",
+        "rtc_bsp.h": "c"
+    }
+}

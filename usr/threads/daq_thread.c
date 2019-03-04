@@ -39,7 +39,7 @@ static void daq_gvar_update(void)
     extern sys_reg_st g_sys;
 
     ai_sts_update(&g_sys); //update g_ain_inst
-    // di_sts_update(&g_sys); //update g_din_inst
+    di_sts_update(&g_sys); //update g_din_inst
 
     AM_Sensor_update(&g_sys);
     // mbm_sts_update(&g_sys); // update modbus master components status

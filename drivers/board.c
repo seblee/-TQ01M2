@@ -17,6 +17,7 @@
 #include "adc_bsp.h"
 #include "i2c_bsp.h"
 #include "gpio.h"
+#include "dio_bsp.h"
 #include "pwm_bsp.h"
 #include "rtc_bsp.h"
 #include "TH_SENSOR_BSP.h"
@@ -110,7 +111,7 @@ int hw_drivers_init(void)
 
     drv_adc_dma_init(); //模拟输入初始化
 
-    //    drv_dio_init(); //数字输入输出初始化
+    drv_dio_init(); //数字输入输出初始化
 
     drv_pwm_init(); //模拟输出初始化
 

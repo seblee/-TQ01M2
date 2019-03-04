@@ -43,13 +43,12 @@ typedef struct
 
 static uint16_t do_set(int16_t pin_id, BitAction value);
 #define Pin_Map_In DI_MAX_CNT
+//#define Pin_Map_In 18
 const pin_map_st in_pin_map_inst[Pin_Map_In] = //数字输入Pin_Map
     {
         {GPIO_Pin_7, GPIOC},  //DI1
         {GPIO_Pin_8, GPIOC},  //DI2
         {GPIO_Pin_8, GPIOA},  //DI3
-                              //		{GPIO_Pin_8, 		GPIOA},		//DI2
-                              //		{GPIO_Pin_8, 	  GPIOC},		//DI3
         {GPIO_Pin_6, GPIOC},  //DI4
         {GPIO_Pin_12, GPIOD}, //DI6
         {GPIO_Pin_11, GPIOD}, //DI7
@@ -63,6 +62,8 @@ const pin_map_st in_pin_map_inst[Pin_Map_In] = //数字输入Pin_Map
         {GPIO_Pin_12, GPIOB}, //DI14
         {GPIO_Pin_0, GPIOE},  //DI15
         {GPIO_Pin_0, GPIOD},  //DI16
+                              // {GPIO_Pin_3, GPIOB},  //DI17
+                              // {GPIO_Pin_7, GPIOD},  //DI18
 };
 #define Pin_Map_Out 21
 const pin_map_st out_pin_map_inst[Pin_Map_Out] = //数字输出Pin_Map
@@ -73,21 +74,20 @@ const pin_map_st out_pin_map_inst[Pin_Map_Out] = //数字输出Pin_Map
         {GPIO_Pin_5, GPIOA},  //DO4
         {GPIO_Pin_4, GPIOA},  //DO5
         {GPIO_Pin_2, GPIOA},  //DO6
-        {GPIO_Pin_1, GPIOA},  //DO7
-        {GPIO_Pin_0, GPIOA},  //DO8
-        {GPIO_Pin_8, GPIOE},  //DO9
+        {GPIO_Pin_2, GPIOE},  //DO7
+        {GPIO_Pin_3, GPIOE},  //DO8
+        {GPIO_Pin_8, GPIOE},  //DO9 
         {GPIO_Pin_10, GPIOE}, //DO10
         {GPIO_Pin_11, GPIOE}, //DO11
         {GPIO_Pin_12, GPIOE}, //DO12
         {GPIO_Pin_13, GPIOE}, //DO13
         {GPIO_Pin_14, GPIOE}, //DO14
-        {GPIO_Pin_7, GPIOE},  //DO15
+        {GPIO_Pin_15, GPIOE}, //DO15
         {GPIO_Pin_1, GPIOB},  //DO16
-
         {GPIO_Pin_0, GPIOB},  //DO17
         {GPIO_Pin_5, GPIOC},  //DO18
-        {GPIO_Pin_9, GPIOE},  //DO19-LOCKLED
-        {GPIO_Pin_11, GPIOA}, //DO20-PWRCTRL
+        {GPIO_Pin_14, GPIOC}, //DO19-LOCKLED
+        {GPIO_Pin_15, GPIOC}, //DO20-PWRCTRL
         {GPIO_Pin_13, GPIOC}, //LED,RUN
 };
 
@@ -267,20 +267,15 @@ uint32_t Sts_Remap(uint32_t u32IN_Bit, uint8_t Rep_Type, uint8_t Rep_Dir)
 //local variable definition
 static dio_dev_st dio_dev_inst;
 
-static uint16_t drv_di_timer_init(void);
 static void dio_reg_init(void);
 static void di_reg_update(void);
 //static void pwm_slow_timer_init(void);
-static void drv_dio_bsp_init(void);
 
 //digital input sampling thread
 void di_thread_entry(void *parameter)
 {
     rt_thread_delay(DI_THREAD_DELAY);
-    drv_dio_bsp_init();
     dio_reg_init();
-    drv_di_timer_init();
-    //    pwm_slow_timer_init();
     rt_thread_delay(300);
     while (1)
     {
@@ -297,44 +292,44 @@ void di_thread_entry(void *parameter)
 //数字输入输出初始化函数
 static void drv_dio_bsp_init(void)
 {
-//    extern local_reg_st l_sys;
-//    GPIO_InitTypeDef GPIO_InitStructure;
-//    uint16_t i;
+    extern local_reg_st l_sys;
+    GPIO_InitTypeDef GPIO_InitStructure;
+    uint16_t i;
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE, ENABLE);
 
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE, ENABLE);
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    //数字输入PIN初始化
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    for (i = 0; i < Pin_Map_In; i++)
+    {
+        GPIO_InitStructure.GPIO_Pin = in_pin_map_inst[i].pin_id;
+        GPIO_Init(in_pin_map_inst[i].pin_base, &GPIO_InitStructure);
+    }
 
-//    GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+    //数字输出PIN初始化
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    // GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
+    for (i = 0; i < Pin_Map_Out; i++)
+    {
+        GPIO_InitStructure.GPIO_Pin = out_pin_map_inst[i].pin_id;
+        GPIO_Init(out_pin_map_inst[i].pin_base, &GPIO_InitStructure);
+    }
+    //			Led_Gpio_Init();
+    //复位
+    for (i = 1; i < Pin_Map_Out; i++)
+    {
+        do_set(i, Bit_RESET);
+    }
 
-//    //数字输入PIN初始化
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-//    for (i = 0; i < Pin_Map_In; i++)
-//    {
-//        GPIO_InitStructure.GPIO_Pin = in_pin_map_inst[i].pin_id;
-//        GPIO_Init(in_pin_map_inst[i].pin_base, &GPIO_InitStructure);
-//    }
-
-//    //数字输出PIN初始化
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//    for (i = 0; i < Pin_Map_Out; i++)
-//    {
-//        GPIO_InitStructure.GPIO_Pin = out_pin_map_inst[i].pin_id;
-//        GPIO_Init(out_pin_map_inst[i].pin_base, &GPIO_InitStructure);
-//    }
-//    //			Led_Gpio_Init();
-//    //复位
-//    for (i = 1; i < Pin_Map_Out; i++)
-//    {
-//        do_set(i, Bit_RESET);
-//    }
-
-//    //跳线选择初始化
-//    GPIO_InitStructure.GPIO_Pin = SLE1_PIN | SLE2_PIN;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; //50M
-//    GPIO_Init(SLE_GPIO, &GPIO_InitStructure);
+    //跳线选择初始化.
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_InitStructure.GPIO_Pin = SLE1_PIN | SLE2_PIN;
+    GPIO_Init(SLE_GPIO, &GPIO_InitStructure);
 
     return;
 }
@@ -561,19 +556,19 @@ void drv_dio_init(void)
 **/
 void di_sts_update(sys_reg_st *gds_sys_ptr)
 {
-    //			uint16_t din_mask_bitmap;
-    //		uint16_t din_bitmap_polarity;
-    //
-    //		din_mask_bitmap = (gds_sys_ptr->config.dev_mask.din[0]|(DIN_MASK_MASK))&(DIN_MASK_MASK1);
-    //				rt_kprintf("din_mask_bitmap = %X\n",din_mask_bitmap);
-    //	  din_bitmap_polarity = gds_sys_ptr->config.dev_mask.din_bitmap_polarity[0]&(DIN_POLARITY_MASK);
-    //					rt_kprintf("din_bitmap_polarity = %X\n",din_bitmap_polarity);
-    //	  //mask报警掩码
-    //		dio_dev_inst.din.bitmap[0] = (~(dio_dev_inst.din.bitmap[0]^din_bitmap_polarity));
-    //				rt_kprintf("dio_dev_inst.din.bitmap[0]1 = %X\n",dio_dev_inst.din.bitmap[0]);
-    //		// 数字输入掩码
-    //		gds_sys_ptr->status.din_bitmap[0] = din_mask_bitmap & dio_dev_inst.din.bitmap[0];
-    //					rt_kprintf("gds_sys_ptr->status.din_bitmap[0] = %X\n",gds_sys_ptr->status.din_bitmap[0]);
+    // uint16_t din_mask_bitmap;
+    // uint16_t din_bitmap_polarity;
+
+    // din_mask_bitmap = (gds_sys_ptr->config.dev_mask.din[0] | (DIN_MASK_MASK)) & (DIN_MASK_MASK1);
+    // rt_kprintf("din_mask_bitmap = %X\n", din_mask_bitmap);
+    // din_bitmap_polarity = gds_sys_ptr->config.dev_mask.din_bitmap_polarity[0] & (DIN_POLARITY_MASK);
+    // rt_kprintf("din_bitmap_polarity = %X\n", din_bitmap_polarity);
+    // //mask报警掩码
+    // dio_dev_inst.din.bitmap[0] = (~(dio_dev_inst.din.bitmap[0] ^ din_bitmap_polarity));
+    // rt_kprintf("dio_dev_inst.din.bitmap[0]1 = %X\n", dio_dev_inst.din.bitmap[0]);
+    // // 数字输入掩码
+    // gds_sys_ptr->status.din_bitmap[0] = din_mask_bitmap & dio_dev_inst.din.bitmap[0];
+    // rt_kprintf("gds_sys_ptr->status.din_bitmap[0] = %X\n", gds_sys_ptr->status.din_bitmap[0]);
 
     uint16_t din_mask_bitmap[2];
     uint16_t din_bitmap_polarity[2];
@@ -591,11 +586,11 @@ void di_sts_update(sys_reg_st *gds_sys_ptr)
     gds_sys_ptr->status.din_bitmap[1] &= 0xFF;
     gds_sys_ptr->status.din_bitmap[1] |= ((din_mask_bitmap[1] & dio_dev_inst.din.bitmap[1]) << 8); //放到高16位
 
-    //		rt_kprintf("bitmap[0] = %X,din_bitmap[0] = %X\n",dio_dev_inst.din.bitmap[0],gds_sys_ptr->status.din_bitmap[0]);
+    // rt_kprintf("bitmap[0] = %X,din_bitmap[0] = %X\n", dio_dev_inst.din.bitmap[0], gds_sys_ptr->status.din_bitmap[0]);
 
     // 数字输入掩码
     gds_sys_ptr->status.ComSta.u16Din_bitmap[0] = din_mask_bitmap[0] & dio_dev_inst.din.bitmap[0];
-    //		rt_kprintf("bitmap[0] = %X,din_bitmap[0] = %X\n",dio_dev_inst.din.bitmap[0],gds_sys_ptr->status.ComSta.u16Din_bitmap[0]);
+    // rt_kprintf("bitmap[0] = %X,u16Din_bitmap[0] = %X\n", dio_dev_inst.din.bitmap[0], gds_sys_ptr->status.ComSta.u16Din_bitmap[0]);
 }
 
 void dio_set_do(uint16_t channel_id, BitAction data)

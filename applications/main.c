@@ -65,6 +65,13 @@ int main(void)
     if (daq_thread != RT_NULL)
         rt_thread_startup(daq_thread);
 
+    // rt_thread_t di_thread;
+    // di_thread = rt_thread_create("di", di_thread_entry, RT_NULL,
+    //                              256, DI_THREAD_PRIO, 5);
+    // RT_ASSERT(di_thread != RT_NULL);
+    // if (di_thread != RT_NULL)
+    //     rt_thread_startup(di_thread);
+
     return 0;
 }
 
@@ -84,7 +91,6 @@ void rt_init_thread_entry(void *parameter)
 //        rt_kprintf("File System initialzation failed!\n");
 #endif /* RT_USING_DFS */
 
-    //   hw_drivers_init();
     sys_global_var_init();
     sys_local_var_init();
     // drv_can_init();

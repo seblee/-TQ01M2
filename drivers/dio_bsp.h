@@ -1,6 +1,6 @@
 #ifndef __DIO_H__
 #define __DIO_H__
-#include "board.h"
+#include "stm32f4xx.h"
 #include "sys_conf.h"
 
 enum

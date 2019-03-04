@@ -785,60 +785,64 @@ int stm32_hw_usart_init(void)
 }
 INIT_BOARD_EXPORT(stm32_hw_usart_init); 
 /**********************************佛山吉宝加热器***********************************************/
-
+#ifndef  RT_USING_UART1 
 void Usart1_Rcc_Conf(void)
 {
-//    /* Enable UART GPIO clocks */
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-//    /* Enable UART clock */
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-//    return;
+    /* Enable UART1 GPIO clocks */
+    RCC_AHB1PeriphClockCmd(UART1_GPIO_RCC, ENABLE);
+    /* Enable UART1 clock */
+    RCC_APB2PeriphClockCmd(RCC_APBPeriph_UART1, ENABLE);
+    return;
 }
 
 void Usart1_Gpio_Conf(void)
-{
-//    GPIO_InitTypeDef GPIO_InitStructure;
+{   
+    GPIO_InitTypeDef GPIO_InitStructure;
 
-//    //USART1 Tx(PA.09)
-//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-//    GPIO_Init(GPIOA, &GPIO_InitStructure);
-//    //USART1 Rx(PA.10)
-//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-//    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+
+
+    /* Configure USART1 Rx/tx PIN */
+    GPIO_InitStructure.GPIO_Pin = UART1_GPIO_RX | UART1_GPIO_TX;
+     /* Connect alternate function */
+    GPIO_PinAFConfig(UART1_GPIO, UART1_TX_PIN_SOURCE, GPIO_AF_USART1);
+    GPIO_PinAFConfig(UART1_GPIO, UART1_RX_PIN_SOURCE, GPIO_AF_USART1);    
+    
+    GPIO_Init(UART1_GPIO, &GPIO_InitStructure);
+ 
     return;
 }
 void Usart1_Init_Conf(void)
 {
     //USART1配置
-//    USART_InitTypeDef USART_InitStructure;
-//    NVIC_InitTypeDef NVIC_InitStructure;
+    USART_InitTypeDef USART_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
 
-//    USART_InitStructure.USART_BaudRate = 9600;
-//    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-//    USART_InitStructure.USART_StopBits = USART_StopBits_1;
-//    USART_InitStructure.USART_Parity = USART_Parity_No;
-//    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-//    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+    USART_InitStructure.USART_BaudRate = 9600;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
 
-//    ENTER_CRITICAL_SECTION(); //关全局中断
+    ENTER_CRITICAL_SECTION(); //关全局中断
 
-//    USART_Init(USART1, &USART_InitStructure);
-//    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-//    USART_Cmd(USART1, ENABLE);
+    USART_Init(USART1, &USART_InitStructure);
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+    USART_Cmd(USART1, ENABLE);
 
-//    //=====================中断初始化======================================
-//    //设置NVIC优先级分组为Group2：0-3抢占式优先级，0-3的响应式优先级
-//    //	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-//    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//    NVIC_Init(&NVIC_InitStructure);
-//    EXIT_CRITICAL_SECTION(); //开全局中断
+    //=====================中断初始化======================================
+    //设置NVIC优先级分组为Group2：0-3抢占式优先级，0-3的响应式优先级
+    //	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    EXIT_CRITICAL_SECTION(); //开全局中断
     return;
 }
 
@@ -874,6 +878,30 @@ void xPort_Usart_Init(uint8_t ucMB_Number)
     }
     return;
 }
+
+void Heat_Usart_Close(void)
+{
+    USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+    USART_Cmd(USART1, DISABLE);
+    return;
+}
+//关闭串口
+void xPort_Usart_Close(uint8_t ucMB_Number)
+{
+    switch (ucMB_Number)
+    {
+    case UART_HEAT:
+        Heat_Usart_Close();
+        break;
+    case UART_PM25:
+
+        break;
+    default:
+        break;
+    }
+    return;
+}
+#endif
 //串口发送数据
 uint8_t UART_Send(uint8_t *u8Buf, uint8_t u8Len)
 {
@@ -925,6 +953,23 @@ uint8_t Heat_Send(uint8_t u8Type, uint8_t u8OC, uint8_t u8Temp, uint16_t u16WL)
         return UART_Send(&u8SendBuf[0], HEATWRITE_NUM + 1);
     }
 }
+
+uint8_t xPortSerialGetByte(char *pucByte, uint8_t ucMB_Number)
+{
+    switch (ucMB_Number)
+    {
+    case UART_HEAT:
+        *pucByte = USART_ReceiveData(USART1);
+        break;
+    case UART_PM25:
+        *pucByte = USART_ReceiveData(UART5);
+        break;
+    default:
+        break;
+    }
+    return 1;
+}
+
 uint8_t AnalyseProtocol(uint8_t *u8Buff)
 {
     extern local_reg_st l_sys;
@@ -1007,3 +1052,128 @@ void Comm_Service(void)
     }
     return;
 }
+#ifndef  RT_USING_UART1 
+//加热器串口接收数据
+uint8_t HeatPortSerialReceiveFSM(uint8_t port)
+{
+    extern sys_reg_st g_sys;
+    uint8_t RXDByte;
+    uint16_t u16CheckSum;
+
+    g_sys.status.ComSta.TEST |= 0x01;
+    /* Always read the character. */
+    (void)xPortSerialGetByte((char *)&RXDByte, port);
+    g_ComGap[port] = 0;
+    switch (Protocol[port].StatckStatus)
+    {
+    case PROTOCOL_STACK_IDLE:
+        // 空闲状态,等待接收帧首字符(01)
+        //		    if ((g_ComStat[port]==RECV_Wait)                        //当前正"接收等待"
+        //		    &&(0x01== RXDByte))
+        if (0x01 == RXDByte)
+        {
+            g_ComStat[port] = RECV_Going; //置"接收进行"状态
+            g_ComBuff[port][0] = RXDByte;
+            u16FrameCheckSum = RXDByte;
+            Protocol[port].DataCount = 1;
+            Protocol[port].StatckStatus++;
+            g_sys.status.ComSta.TEST |= 0x02;
+            g_sys.status.ComSta.TEST4 = u16FrameCheckSum;
+        }
+        break;
+    case PROTOCOL_STACK_CK:
+        if ((HEAT_OPEN == RXDByte) //当前正"接收等待"
+            || (HEAT_CLOSE == RXDByte))
+        {
+            // 累加校验和
+            u16FrameCheckSum += RXDByte;
+            g_ComBuff[port][(Protocol[port].DataCount)++] = RXDByte;
+            u8FrameDataLength = 14;
+            Protocol[port].StatckStatus++;
+            g_sys.status.ComSta.TEST |= 0x04;
+        }
+        else
+        {
+            // 帧错误,协议解析复位
+            Protocol[port].StatckStatus = PROTOCOL_STACK_IDLE;
+            g_ComStat[port] = INIT_Apply; //置"发送等待"状态
+        }
+        g_sys.status.ComSta.TEST5 = u16FrameCheckSum;
+        break;
+    case PROTOCOL_STACK_RCV:
+        // 累加校验和
+        u16FrameCheckSum += RXDByte;
+        g_ComBuff[port][(Protocol[port].DataCount)++] = RXDByte;
+        u8FrameDataLength--;
+        // 接收数据域的数据
+        if (!u8FrameDataLength)
+        {
+            // 接收校验和
+            g_sys.status.ComSta.TEST6 = u16FrameCheckSum;
+            u8FrameDataLength = 2;
+            Protocol[port].StatckStatus++;
+        }
+        g_sys.status.ComSta.TEST |= 0x08;
+        break;
+    case PROTOCOL_STACK_CS:
+        g_ComBuff[port][(Protocol[port].DataCount)++] = RXDByte;
+        u8FrameDataLength--;
+        // 接收数据域的数据
+        if (!u8FrameDataLength)
+        {
+            g_sys.status.ComSta.TEST |= 0x10;
+            // 接收校验和
+            u16CheckSum = g_ComBuff[port][16];
+            u16CheckSum = (u16CheckSum << 8) | g_ComBuff[port][17];
+            g_sys.status.ComSta.TEST2 = u16FrameCheckSum;
+            g_sys.status.ComSta.TEST3 = u16CheckSum;
+            if (u16CheckSum == u16FrameCheckSum)
+            {
+                g_sys.status.ComSta.TEST |= 0x20;
+                Protocol[port].StatckStatus = PROTOCOL_STACK_IDLE;
+                g_ComStat[port] = RECV_Over; //置"接收完成"状态
+            }
+            else
+            {
+                // 校验和不正确,协议解析复位
+                g_sys.status.ComSta.TEST |= 0x40;
+                Protocol[port].StatckStatus = PROTOCOL_STACK_IDLE;
+                g_ComStat[port] = INIT_Apply; //置"初始化"状态
+            }
+        }
+        break;
+    case PROTOCOL_STACK_END:
+
+        break;
+    default:
+        Protocol[port].StatckStatus = PROTOCOL_STACK_IDLE;
+        g_ComStat[port] = INIT_Apply; //置"初始化"状态
+        break;
+    }
+    return 1;
+}
+
+void USART1_IRQHandler(void)
+{
+
+    rt_interrupt_enter();
+    //溢出错误
+    if (USART_GetFlagStatus(USART1, USART_FLAG_ORE) == SET)
+    {
+        ;
+    }
+    //接收中断
+    if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
+    {
+        HeatPortSerialReceiveFSM(UART_HEAT);
+        USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+    }
+    //发送中断
+    if (USART_GetITStatus(USART1, USART_IT_TXE) == SET)
+    {
+        ;
+    }
+    rt_interrupt_leave();
+}
+#endif
+

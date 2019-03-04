@@ -14,7 +14,7 @@
 #include "team.h"
 #include "sys_conf.h"
 #include "led_bsp.h"
-#include "password.h" 
+#include "password.h"
 #include "calc.h"
 
 //#define ACL_ENMODE_ENABLE	0x0000
