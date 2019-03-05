@@ -23,7 +23,7 @@
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
-// #define DBG_ENABLE
+#define DBG_ENABLE
 #define DBG_SECTION_NAME "network"
 #ifdef MQTT_DEBUG
 #define DBG_LEVEL DBG_LOG
@@ -81,7 +81,8 @@ static iotx_device_info_t device_info;
 
 /* 数据通道控制 */
 void NetWork_DIR_Init(void)
-{   GPIO_InitTypeDef GPIO_InitStructure;
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
     RCC_AHB1PeriphClockCmd(TQ01E1_PORT_RCC, ENABLE);
 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -94,7 +95,7 @@ void NetWork_DIR_Init(void)
     GPIO_Init(TQ01E1_DIR_PORT, &GPIO_InitStructure);
     DIR_8266();
 }
- 
+
 int module_thread_start(void *parameter);
 
 void net_thread_entry(void *parameter)
@@ -104,7 +105,7 @@ void net_thread_entry(void *parameter)
     /**NetWork_DIR_Init**/
     NetWork_DIR_Init();
 
-    rt_thread_delay(rt_tick_from_millisecond(2000));
+    rt_thread_delay(rt_tick_from_millisecond(4000));
 
     // result = network_Conversion_wifi_parpmeter(&g_sys.config.ComPara.Net_Conf, &temp);
     network_get_interval(&client.RealtimeInterval, &client.TimingInterval);

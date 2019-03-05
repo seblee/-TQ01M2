@@ -1,6 +1,13 @@
 {
     "files.associations": {
         "pwm_bsp.h": "c",
-        "rtc_bsp.h": "c"
+        "rtc_bsp.h": "c",
+        "port.h": "c",
+        "mbport.h": "c",
+        "mb.h": "c",
+        "board.h": "c",
+        "usart.h": "c",
+        "team.h": "c",
+        "req_execution.h": "c"
     }
 }

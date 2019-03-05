@@ -66,14 +66,19 @@ static void IIC_SDA(uint8_t n)
 
 void drv_i2c_init(void)
 {
-    I2C_Config();
+    static rt_uint8_t inited_flag = 0;
+    if (inited_flag == 0)
+    {
+        I2C_Config();
 #if USE_MUTEX
-    init_IIC_Mutex();
+        init_IIC_Mutex();
 #endif
+        inited_flag = 1;
+    }
 }
 
 static rt_mutex_t iic_mutex;
-//′′?¨?￥3aá?
+
 #if USE_MUTEX
 static void init_IIC_Mutex(void)
 {

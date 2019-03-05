@@ -32,26 +32,22 @@ extern cpad_slave_st cpad_slave_inst;
 /* ----------------------- Start implementation -----------------------------*/
 void cpad_xMBPortTimersInit(USHORT usTim1Timerout50us)
 {
-
-    uint16_t PrescalerValue = 0;
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
     //====================================时钟初始化===========================
-    //使能定时器3时钟
+    //使能定时器 时钟
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
     //====================================定时器初始化===========================
     //定时器时间基配置说明
-    //HCLK为72MHz，APB1经过2分频为36MHz
-    //TIM3的时钟倍频后为72MHz（硬件自动倍频,达到最大）
-    //TIM3的分频系数为3599，时间基频率为72 / (1 + Prescaler) = 20KHz,基准为50us
-    //TIM最大计数值为usTim1Timerout50u
+    //HCLK为168MHz， APB1 的时钟为 4 分频 42M
+    //TIM5的时钟 84MHz
+    //TIM5的分频系数为4199，时间基频率为84 / (1 + Prescaler) = 20KHz,基准为50us
+    //TIM最大计数值为usTim1Timerout50us
 
-    PrescalerValue = (uint16_t)(SystemCoreClock / 20000) - 1;
-    //定时器1初始化
-    //	TIM_TimeBaseStructure.TIM_Period = (uint16_t) usTim1Timerout50us;
+    //定时器 初始化
     TIM_TimeBaseStructure.TIM_Period = (uint16_t)usTim1Timerout50us * 20; //配方导数据，修改
-    TIM_TimeBaseStructure.TIM_Prescaler = PrescalerValue;
-    TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+    TIM_TimeBaseStructure.TIM_Prescaler = 4199;
+    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
     //预装载使能
@@ -66,9 +62,9 @@ void cpad_xMBPortTimersInit(USHORT usTim1Timerout50us)
     NVIC_Init(&NVIC_InitStructure);
     //清除溢出中断标志位
     TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
-    //定时器3溢出中断关闭
+    //定时器 溢出中断关闭
     TIM_ITConfig(TIM5, TIM_IT_Update, DISABLE);
-    //定时器3禁能
+    //定时器 禁能
     TIM_Cmd(TIM5, DISABLE);
 
     TIM_ClearITPendingBit(TIM5, TIM_IT_Update);

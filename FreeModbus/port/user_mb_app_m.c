@@ -70,7 +70,7 @@ void mbm_fifo_init(UCHAR ucMB_Number)
 
 void modbus_master_thread_entry(void *parameter)
 {
-    //		eMBErrorCode    eStatus = MB_ENOERR; 
+    //		eMBErrorCode    eStatus = MB_ENOERR;
     rt_thread_delay(MODBUS_MASTER_THREAD_DELAY);
     xPort_Usart_Init(UART_HEAT); //加热器
                                  //		eStatus = eMBMasterInit(MB_RTU,UPORT_MBMASTER,9600,MB_PAR_NONE,MB_MASTER_0);
@@ -95,7 +95,7 @@ void modbus_master_thread_entry(void *parameter)
         //				}
         Comm_Service();
         rt_thread_delay(20);
-    } 
+    }
 }
 
 void mbm_fsm_thread_entry(void *parameter)

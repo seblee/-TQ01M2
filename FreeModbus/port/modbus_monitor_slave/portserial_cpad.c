@@ -39,81 +39,74 @@ extern cpad_slave_st cpad_slave_inst;
 void cpad_MBPortSerialInit(UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits,
                            eMBParity eParity)
 {
-//    GPIO_InitTypeDef GPIO_InitStructure;
-//    USART_InitTypeDef USART_InitStructure;
-//    NVIC_InitTypeDef NVIC_InitStructure;
-//    USART_DeInit(USART2);
-//    //======================时钟初始化=======================================
-//    //	RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD ,	ENABLE);
-//    //	RCC_APB1PeriphClockCmd(	RCC_APB1Periph_UART5,ENABLE);
-//    /* Enable UART GPIO clocks */
-//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOD | RCC_APB2Periph_AFIO, ENABLE);
-//    /* Enable UART clock */
-//    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
-//    GPIO_PinRemapConfig(GPIO_Remap_USART2, ENABLE); //USART2重映射
-//    //======================IO初始化=========================================
-//    //UART2_TX
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-//    GPIO_InitStructure.GPIO_Pin = UART2_GPIO_TX;
-//    GPIO_Init(UART2_GPIO, &GPIO_InitStructure);
-//    //UART2_RX
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-//    GPIO_InitStructure.GPIO_Pin = UART2_GPIO_RX;
-//    GPIO_Init(UART2_GPIO, &GPIO_InitStructure);
-//    //配置485发送和接收模式
-//    //TODO   暂时先写A1 等之后组网测试时再修改
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//    GPIO_InitStructure.GPIO_Pin = UART2_DIR_GPIO_PIN;
-//    GPIO_Init(UART2_DIR_GPIO, &GPIO_InitStructure);
-//    //======================串口初始化=======================================
-//    USART_InitStructure.USART_BaudRate = ulBaudRate;
-//    //设置校验模式
-//    switch (eParity)
-//    {
-//    case MB_PAR_NONE: //无校验
-//        USART_InitStructure.USART_Parity = USART_Parity_No;
-//        USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-//        break;
-//    case MB_PAR_ODD: //奇校验
-//        USART_InitStructure.USART_Parity = USART_Parity_Odd;
-//        USART_InitStructure.USART_WordLength = USART_WordLength_9b;
-//        break;
-//    case MB_PAR_EVEN: //偶校验
-//        USART_InitStructure.USART_Parity = USART_Parity_Even;
-//        USART_InitStructure.USART_WordLength = USART_WordLength_9b;
-//        break;
-//    default:
-//        USART_InitStructure.USART_Parity = USART_Parity_No;
-//        USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-//        break;
-//    }
+    GPIO_InitTypeDef GPIO_InitStructure;
+    USART_InitTypeDef USART_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+    USART_DeInit(USART2);
+    //======================时钟初始化=======================================
+    /* Enable UART2 GPIO clocks */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+    /* Enable UART2 clock */
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+    //======================IO初始化=========================================
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+    /* Configure USART2 Rx/tx PIN */
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6;
+    /* Connect alternate function */
+    GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART2);
+    GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART2);
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+    //======================串口初始化=======================================
+    USART_InitStructure.USART_BaudRate = ulBaudRate;
+    //设置校验模式
+    switch (eParity)
+    {
+    case MB_PAR_NONE: //无校验
+        USART_InitStructure.USART_Parity = USART_Parity_No;
+        USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+        break;
+    case MB_PAR_ODD: //奇校验
+        USART_InitStructure.USART_Parity = USART_Parity_Odd;
+        USART_InitStructure.USART_WordLength = USART_WordLength_9b;
+        break;
+    case MB_PAR_EVEN: //偶校验
+        USART_InitStructure.USART_Parity = USART_Parity_Even;
+        USART_InitStructure.USART_WordLength = USART_WordLength_9b;
+        break;
+    default:
+        USART_InitStructure.USART_Parity = USART_Parity_No;
+        USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+        break;
+    }
 
-//    USART_InitStructure.USART_StopBits = USART_StopBits_1;
-//    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-//    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-//    USART_Init(USART2, &USART_InitStructure);
-//    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-//    USART_Cmd(USART2, ENABLE);
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_Init(USART2, &USART_InitStructure);
+    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+    USART_Cmd(USART2, ENABLE);
 
-//    //=====================中断初始化======================================
-//    //设置NVIC优先级分组为Group2：0-3抢占式优先级，0-3的响应式优先级
-//    //	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-//    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//    NVIC_Init(&NVIC_InitStructure);
+    //=====================中断初始化======================================
+    //设置NVIC优先级分组为Group2：0-3抢占式优先级，0-3的响应式优先级
 
-//    CPAD_SLAVE_RS485_RECEIVE_MODE;
-//    if (mnt_tx_fifo.buffer_ptr != RT_NULL)
-//    {
-//        fifo8_reset(&mnt_tx_fifo);
-//    }
-//    else
-//    {
-//        fifo8_init(&mnt_tx_fifo, 1, MNT_RX_LEN);
-//    }
+    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+    CPAD_SLAVE_RS485_RECEIVE_MODE;
+    if (mnt_tx_fifo.buffer_ptr != RT_NULL)
+    {
+        fifo8_reset(&mnt_tx_fifo);
+    }
+    else
+    {
+        fifo8_init(&mnt_tx_fifo, 1, MNT_RX_LEN);
+    }
 
     return;
 }
