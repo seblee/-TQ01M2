@@ -742,6 +742,7 @@ int stm32_hw_usart_init(void)
 
     serial3.ops    = &stm32_uart_ops;
     serial3.config = config;
+    serial3.config.bufsz = 512;
 
     NVIC_Configuration(&uart3);
 

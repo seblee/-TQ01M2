@@ -28,7 +28,7 @@ void Delay_us(unsigned long u32us)
 
     while (u32us--)
     {
-        for (i = 0; i < 32; i++)
+        for (i = 0; i < 64; i++)
             ;
     }
 }

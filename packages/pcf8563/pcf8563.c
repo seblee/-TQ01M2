@@ -150,7 +150,7 @@ int PCF8563_Config(void)
     if (PCF8563_Check())
         LOG_W("PCF8563 Error"); //PCF8563检测结果：错误或损坏
     else
-        LOG_W("PCF8563 Normal"); //PCF8563检测结果：正常
+        LOG_W("PCF8563 OK"); //PCF8563检测结果：正常
 
     PCF8563_Date_Structure.RTC_Years = 19;    //初始化年
     PCF8563_Date_Structure.RTC_Months = 01;   //初始化月
@@ -218,21 +218,22 @@ unsigned char PCF8563_Check(void)
 
     if (PCF8563_Read_Byte(PCF8563_Address_Timer) & 0x80) //如果打开了定时器，则先关闭
     {
-        PCF8563_Write_Byte(PCF8563_Address_Timer, PCF_Timer_Close); //先关闭定时器
+       PCF8563_Write_Byte(PCF8563_Address_Timer, PCF_Timer_Close); //先关闭定时器
         Time_Count = PCF8563_Read_Byte(PCF8563_Address_Timer_VAL);  //先保存计数值
     }
 
     PCF8563_Write_Byte(PCF8563_Address_Timer_VAL, PCF8563_Check_Data); //写入检测值
-    for (test_value = 0; test_value < 50; test_value++)
+    for (test_value = 0; test_value < 250; test_value++)
     {
     }                                                          //延时一定时间再读取
     test_value = PCF8563_Read_Byte(PCF8563_Address_Timer_VAL); //再读取回来
 
     if (Time_Count != 0) //启动了定时器功能，则恢复
     {
-        PCF8563_Write_Byte(PCF8563_Address_Timer_VAL, Time_Count); //恢复现场
+       PCF8563_Write_Byte(PCF8563_Address_Timer_VAL, Time_Count); //恢复现场
         PCF8563_Write_Byte(PCF8563_Address_Timer, PCF_Timer_Open); //启动定时器
-    }
+    } 
+  
     if (test_value != PCF8563_Check_Data) //如果读出值与写入值不同，则器件错误或损坏
     {
         return 1; //错误或损坏

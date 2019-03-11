@@ -201,7 +201,7 @@ void ai_sts_update(sys_reg_st *gds_sys_ptr)
 
     ain_mask_bitmap = gds_sys_ptr->config.dev_mask.ain;
     // ain_mask_bitmap = 0x001F;
-    // rt_kprintf("V[0]:0x%04X,V[1]:0x%04X,V[2]:0x%04X,V[3]:0x%04X,V[4]:0x%04X,V[5]:0x%04X,V[6]:0x%04X\n", ADC1ConvertedValue[0], ADC1ConvertedValue[1], ADC1ConvertedValue[2], ADC1ConvertedValue[3], ADC1ConvertedValue[4], ADC1ConvertedValue[5], ADC1ConvertedValue[6]);
+    // rt_kprintf("V[0]:%04d,V[1]:%04d,V[2]:%04d,V[3]:%04d,V[4]:%04d,V[5]:%04d,V[6]:%04d\n", ADC1ConvertedValue[0], ADC1ConvertedValue[1], ADC1ConvertedValue[2], ADC1ConvertedValue[3], ADC1ConvertedValue[4], ADC1ConvertedValue[5], ADC1ConvertedValue[6]);
     // for (i = 0; i < AI_MAX_CNT; i++)
     // {
     //     ADCValProcess(ADC1ConvertedValue, ADC1Buff, i);

@@ -23,7 +23,7 @@
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
-#define DBG_ENABLE
+// #define DBG_ENABLE
 #define DBG_SECTION_NAME "network"
 #ifdef MQTT_DEBUG
 #define DBG_LEVEL DBG_LOG
@@ -249,7 +249,7 @@ void network_Serialize_inform_json(char **datapoint)
         LOG_D("[%d] construct JS_paprms faild !", rt_tick_get());
         goto __exit;
     }
-    result = cJSON_AddStringToObject(JS_paprms, "version", "0.0.2");
+    result = cJSON_AddStringToObject(JS_paprms, "version", "0.0.3");
     if (result == NULL)
         LOG_D("[%d] JSON add err", rt_tick_get());
     cJSON_AddItemToObject(root, "params", JS_paprms);
@@ -326,8 +326,8 @@ void network_Serialize_para_json(char **datapoint)
     cJSON_AddItemToObject(root, "Sign", cJSON_CreateString(sign_hex));
     *datapoint = cJSON_PrintUnformatted(root);
     cJSON_Delete(root);
-    //    if (*datapoint)
-    //       LOG_D("[%d] JSON len:%d", rt_tick_get(), strlen(*datapoint));
+    // if (*datapoint)
+    //     LOG_D("[%d] JSON len:%d", rt_tick_get(), strlen(*datapoint));
 }
 /**
  ****************************************************************************

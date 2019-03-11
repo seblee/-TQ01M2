@@ -93,9 +93,9 @@
 #define PIout(n) BIT_ADDR(GPIOI_ODR_Addr, n) //输出
 #define PIin(n) BIT_ADDR(GPIOI_IDR_Addr, n)  //输入
 
-#define IIC_SCL PBout(9)
-#define IIC_SDA PEout(1) //IIC发送数据用
-#define IN_SDA PEin(1)   //IIC读取数据用
+#define IIC_SCL PBout(8)
+#define IIC_SDA PBout(9) //IIC发送数据用
+#define IN_SDA PBin(9)   //IIC读取数据用
 
 /******************************************************************************
                                通讯频率延时函数

@@ -21,8 +21,8 @@
 #define II_AM_SDA_00_Pin GPIO_Pin_4
 #define II_AM_SDA_00_GPIO GPIOB
 
-#define II_AM_SDA_01_Pin GPIO_Pin_3
-#define II_AM_SDA_01_GPIO GPIOB
+//#define II_AM_SDA_01_Pin GPIO_Pin_3
+//#define II_AM_SDA_01_GPIO GPIOB
 
 //#define AM_SDA_READ()   GPIO_ReadInputDataBit(II_AM_SDA_GPIO,II_AM_SDA_Pin)
 //#define	AM_SDA_H	   GPIO_SetBits(II_AM_SDA_GPIO,II_AM_SDA_Pin)

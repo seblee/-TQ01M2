@@ -20,9 +20,9 @@ void AM_BUS_Config(void)
     GPIO_Init(II_AM_SDA_00_GPIO, &GPIO_InitStructure);
     GPIO_SetBits(II_AM_SDA_00_GPIO, II_AM_SDA_00_Pin);
     //Configure BUS pins: SDA_01
-    GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
-    GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
-    GPIO_SetBits(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
+//    GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
+//    GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
+//    GPIO_SetBits(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
 }
 
 void AM_Init(void)
@@ -41,7 +41,7 @@ static void AM_SDA_H(uint8_t u8SN)
     break;
     case 0x01:
     {
-        GPIO_SetBits(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
+      //  GPIO_SetBits(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
     }
     break;
     default:
@@ -60,7 +60,7 @@ static void AM_SDA_L(uint8_t u8SN)
     break;
     case 0x01:
     {
-        GPIO_ResetBits(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
+     //   GPIO_ResetBits(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
     }
     break;
     default:
@@ -80,7 +80,7 @@ static uint8_t AM_SDA_READ(uint8_t u8SN)
     break;
     case 0x01:
     {
-        u8Read_SDA = GPIO_ReadInputDataBit(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
+     //   u8Read_SDA = GPIO_ReadInputDataBit(II_AM_SDA_01_GPIO, II_AM_SDA_01_Pin);
     }
     break;
     default:
@@ -107,9 +107,9 @@ static void AM_SDA_OUT(uint8_t u8SN)
     break;
     case 0x01:
     {
-        //Configure BUS pins: SDA_01
-        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
-        GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
+        // //Configure BUS pins: SDA_01
+      //  GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
+     //   GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
     }
     break;
     default:
@@ -135,9 +135,9 @@ static void AM_SDA_IN(uint8_t u8SN)
     break;
     case 0x01:
     {
-        //Configure BUS pins: SDA_01
-        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
-        GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
+//        //Configure BUS pins: SDA_01
+//        GPIO_InitStructure.GPIO_Pin = II_AM_SDA_01_Pin;
+//        GPIO_Init(II_AM_SDA_01_GPIO, &GPIO_InitStructure);
     }
     break;
     default:

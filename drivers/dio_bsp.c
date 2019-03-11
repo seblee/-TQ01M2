@@ -6,7 +6,7 @@
 #include "led_bsp.h"
 #include "local_status.h"
 
-#define DI_MAX_CNT 16
+#define DI_MAX_CNT 18
 //#define DIN_MASK_MASK         0x003f
 //#define DIN_MASK_MASK1        0xffff //屏蔽
 //#define DIN_POLARITY_MASK     0xffc0
@@ -43,13 +43,12 @@ typedef struct
 
 static uint16_t do_set(int16_t pin_id, BitAction value);
 #define Pin_Map_In DI_MAX_CNT
-//#define Pin_Map_In 18
 const pin_map_st in_pin_map_inst[Pin_Map_In] = //数字输入Pin_Map
     {
-        {GPIO_Pin_7, GPIOC},  //DI1
+        {GPIO_Pin_4, GPIOD},  //DI1
         {GPIO_Pin_8, GPIOC},  //DI2
         {GPIO_Pin_8, GPIOA},  //DI3
-        {GPIO_Pin_6, GPIOC},  //DI4
+        {GPIO_Pin_1, GPIOD},  //DI4
         {GPIO_Pin_12, GPIOD}, //DI6
         {GPIO_Pin_11, GPIOD}, //DI7
         {GPIO_Pin_13, GPIOD}, //DI5//中下水位
@@ -62,10 +61,10 @@ const pin_map_st in_pin_map_inst[Pin_Map_In] = //数字输入Pin_Map
         {GPIO_Pin_12, GPIOB}, //DI14
         {GPIO_Pin_0, GPIOE},  //DI15
         {GPIO_Pin_0, GPIOD},  //DI16
-                              // {GPIO_Pin_3, GPIOB},  //DI17
-                              // {GPIO_Pin_7, GPIOD},  //DI18
+        {GPIO_Pin_3, GPIOB},  //DI17
+        {GPIO_Pin_7, GPIOD},  //DI18
 };
-#define Pin_Map_Out 21
+#define Pin_Map_Out 23
 const pin_map_st out_pin_map_inst[Pin_Map_Out] = //数字输出Pin_Map
     {
         {GPIO_Pin_4, GPIOC},  //DO1
@@ -76,18 +75,20 @@ const pin_map_st out_pin_map_inst[Pin_Map_Out] = //数字输出Pin_Map
         {GPIO_Pin_2, GPIOA},  //DO6
         {GPIO_Pin_2, GPIOE},  //DO7
         {GPIO_Pin_3, GPIOE},  //DO8
-        {GPIO_Pin_8, GPIOE},  //DO9 
+        {GPIO_Pin_8, GPIOE},  //DO9
         {GPIO_Pin_10, GPIOE}, //DO10
         {GPIO_Pin_11, GPIOE}, //DO11
         {GPIO_Pin_12, GPIOE}, //DO12
         {GPIO_Pin_13, GPIOE}, //DO13
         {GPIO_Pin_14, GPIOE}, //DO14
-        {GPIO_Pin_15, GPIOE}, //DO15
+        {GPIO_Pin_7, GPIOE},  //DO15
         {GPIO_Pin_1, GPIOB},  //DO16
         {GPIO_Pin_0, GPIOB},  //DO17
         {GPIO_Pin_5, GPIOC},  //DO18
-        {GPIO_Pin_14, GPIOC}, //DO19-LOCKLED
-        {GPIO_Pin_15, GPIOC}, //DO20-PWRCTRL
+        {GPIO_Pin_14, GPIOC}, //DO21
+        {GPIO_Pin_15, GPIOC}, //DO22
+        {GPIO_Pin_9, GPIOE},  //LOCKLED
+        {GPIO_Pin_11, GPIOA}, //PWRCTRL
         {GPIO_Pin_13, GPIOC}, //LED,RUN
 };
 
@@ -583,14 +584,18 @@ void di_sts_update(sys_reg_st *gds_sys_ptr)
     dio_dev_inst.din.bitmap[1] = (~(dio_dev_inst.din.bitmap[1] ^ din_bitmap_polarity[1]));
     // 数字输入掩码
     gds_sys_ptr->status.din_bitmap[0] = din_mask_bitmap[0] & dio_dev_inst.din.bitmap[0];
-    gds_sys_ptr->status.din_bitmap[1] &= 0xFF;
-    gds_sys_ptr->status.din_bitmap[1] |= ((din_mask_bitmap[1] & dio_dev_inst.din.bitmap[1]) << 8); //放到高16位
+    gds_sys_ptr->status.din_bitmap[1] = din_mask_bitmap[1] & dio_dev_inst.din.bitmap[1];
+    //    gds_sys_ptr->status.din_bitmap[1] &= 0xFF;
+    //    gds_sys_ptr->status.din_bitmap[1] |= ((din_mask_bitmap[1] & dio_dev_inst.din.bitmap[1]) << 8); //放到高16位
 
     // rt_kprintf("bitmap[0] = %X,din_bitmap[0] = %X\n", dio_dev_inst.din.bitmap[0], gds_sys_ptr->status.din_bitmap[0]);
 
     // 数字输入掩码
     gds_sys_ptr->status.ComSta.u16Din_bitmap[0] = din_mask_bitmap[0] & dio_dev_inst.din.bitmap[0];
-    // rt_kprintf("bitmap[0] = %X,u16Din_bitmap[0] = %X\n", dio_dev_inst.din.bitmap[0], gds_sys_ptr->status.ComSta.u16Din_bitmap[0]);
+    gds_sys_ptr->status.ComSta.u16Din_bitmap[1] = din_mask_bitmap[1] & dio_dev_inst.din.bitmap[1];
+
+   // rt_kprintf("bitmap[0] = %X,u16Din_bitmap[0] = %X\n", dio_dev_inst.din.bitmap[0], gds_sys_ptr->status.ComSta.u16Din_bitmap[0]);
+   // rt_kprintf("bitmap[1] = %X,u16Din_bitmap[1] = %X\n", dio_dev_inst.din.bitmap[1], gds_sys_ptr->status.ComSta.u16Din_bitmap[1]);
 }
 
 void dio_set_do(uint16_t channel_id, BitAction data)

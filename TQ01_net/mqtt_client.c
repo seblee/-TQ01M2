@@ -20,7 +20,7 @@
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
-#define CONFIG_DEBUG
+// #define CONFIG_DEBUG
 #ifdef CONFIG_DEBUG
 #ifndef mqtt_log
 #define mqtt_log(N, ...) rt_kprintf("####[MQTT %s:%4d] " N "\r\n", __FILE__, __LINE__, ##__VA_ARGS__)
@@ -29,7 +29,7 @@
 #define mqtt_log(...)
 #endif /* ! CONFIG_DEBUG */
 
-#define DBG_ENABLE
+// #define DBG_ENABLE
 #define DBG_SECTION_NAME "mqtt"
 #ifdef MQTT_DEBUG
 #define DBG_LEVEL DBG_LOG
@@ -130,7 +130,7 @@ extern sys_reg_st g_sys;
 int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
 {
     rt_err_t rc = RT_EOK;
-    iotx_conn_info_t device_connect;
+    static iotx_conn_info_t device_connect;
     MQTTPacket_connectData client_con = MQTTPacket_connectData_initializer;
 
     /* parameter check */

@@ -511,7 +511,7 @@ static int getNextPacketId(MQTTClient *c)
 }
 
 static int MQTTConnect(MQTTClient *c)
-{
+{ 
     int rc = -1, len;
     MQTTPacket_connectData *options = &c->condata;
 
@@ -520,6 +520,7 @@ static int MQTTConnect(MQTTClient *c)
         LOG_E("[%d]%s c-> is not connected", rt_tick_get(), __FUNCTION__);
         goto _exit;
     }
+    LOG_I("[%d]%s username:%s,password:%s", rt_tick_get(), __FUNCTION__, options->username.cstring, options->password.cstring);
 
     c->keepAliveInterval = options->keepAliveInterval;
 

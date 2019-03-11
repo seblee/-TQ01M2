@@ -31,6 +31,8 @@ enum
 
     DO_EL2_BPOS,      //电子锁2
     DO_RSV3_BPOS,     //预留
+    DO_RSV4_BPOS,
+    DO_RSV5_BPOS,
     DO_LED_LOCK_BPOS, //童锁LED DC5V
     DO_PWR_CTRL_BPOS, //12V电源控制,低电平有效
     DO_RSV_BPOS_0,    //预留
