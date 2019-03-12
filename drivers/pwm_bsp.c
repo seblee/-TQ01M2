@@ -93,7 +93,7 @@ void drv_pwm_init(void)
     uint16_t i;
     pwm_rcc_conf();
     pwm_gpio_conf();
-    drv_pwm_conf(1000 );                 //set frequency to 1000Hz
+    drv_pwm_conf(1000);                    //set frequency to 1000Hz
     for (i = 1; i <= AO_CHAN_MAX_NUM; i++) //reset pwm initial state to output 0
     {
         pwm_set_ao(i, 0);
@@ -130,7 +130,7 @@ static void drv_pwm_conf(uint32_t freq)
     TIM8 Channel4 duty cycle = (TIM8_CCR4/ TIM8_ARR)* 100 = 12.5%
   ----------------------------------------------------------------------- */
     /* Compute the prescaler value */
-    PrescalerValue = (uint16_t)(SystemCoreClock / (freq*1000) )-1;
+    PrescalerValue = (uint16_t)(SystemCoreClock / (freq * 1000)) - 1;
     /* Time base configuration */
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -152,7 +152,7 @@ static void drv_pwm_conf(uint32_t freq)
 
     TIM_OC4Init(TIM8, &TIM_OCInitStructure);
 
-   TIM_OC4PreloadConfig(TIM8, TIM_OCPreload_Enable);
+    TIM_OC4PreloadConfig(TIM8, TIM_OCPreload_Enable);
 
     TIM_ARRPreloadConfig(TIM8, ENABLE);
 
@@ -185,14 +185,13 @@ static void pwm_gpio_conf(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;          //GPIOC9
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;       //复用功能
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; //速度100MHz
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;     //推挽复用输出
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;       //上拉
-    GPIO_Init(GPIOC, &GPIO_InitStructure);             //初始化PC9
-        GPIO_PinAFConfig(GPIOC, GPIO_PinSource9, GPIO_AF_TIM8); //GPIOC9复用为定时器8
-
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;               //GPIOC9
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;            //复用功能
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;      //速度100MHz
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;          //推挽复用输出
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;            //上拉
+    GPIO_Init(GPIOC, &GPIO_InitStructure);                  //初始化PC9
+    GPIO_PinAFConfig(GPIOC, GPIO_PinSource9, GPIO_AF_TIM8); //GPIOC9复用为定时器8
 }
 
 /*****************************************PWM Pluse 流量计****************************************/
@@ -201,21 +200,20 @@ static void CNT_Pluse_Rcc_Conf(void)
 {
     /* TIM4 clock enable */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
-    /* GPIOB clock enable */
-    RCC_APB2PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+    /* GPIOA clock enable */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 }
 
 static void CNT_Pluse_Gpio_Conf(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource12, GPIO_AF_TIM1); //GPIOA12复用为定时器1
     GPIO_Init(GPIOA, &GPIO_InitStructure);
-       GPIO_PinAFConfig(GPIOA, GPIO_PinSource12, GPIO_AF_TIM1); //GPIOA12复用为定时器1
-
 }
 
 static void CNT_Pluse_Time_Conf(void)
@@ -231,7 +229,7 @@ static void CNT_Pluse_Time_Conf(void)
     TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
     TIM_ETRClockMode2Config(TIM1, TIM_ExtTRGPSC_OFF, TIM_ExtTRGPolarity_NonInverted, 2); //ExtTRGFilter:外部触发滤波器,范围0-0xF,预定10
 
-   NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
