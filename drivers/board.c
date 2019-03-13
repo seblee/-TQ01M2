@@ -41,8 +41,8 @@ void NVIC_Configuration(void)
     /* Set the Vector Table base location at 0x20000000 */
     NVIC_SetVectorTable(NVIC_VectTab_RAM, 0x0);
 #else /* VECT_TAB_FLASH  */
-    /* Set the Vector Table base location at 0x08004000 */
-    NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0000);
+    /* Set the Vector Table base location at 0x08010000 */
+    NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x10000);
 #endif
 
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
@@ -123,8 +123,8 @@ int hw_drivers_init(void)
 
     Drv_CNT_Pluse_Init(); //脉冲计数
 
-    //	xPort_Usart_Init(UART_HEAT);//加热器
-    //	drv_led_init();
+    // xPort_Usart_Init(UART_HEAT); //加热器
+    // drv_led_init();
     return 0;
 }
 INIT_DEVICE_EXPORT(hw_drivers_init);

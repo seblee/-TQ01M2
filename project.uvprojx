@@ -274,8 +274,8 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x8004000</StartAddress>
-                <Size>0xfc000</Size>
+                <StartAddress>0x8010000</StartAddress>
+                <Size>0x70000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -360,7 +360,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>0</umfTarg>
+            <umfTarg>1</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -556,6 +556,11 @@
               <FileName>M4_CryptoFW_RngHW_2_0_6.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\Libraries\STM32_Cryptographic_Library\binary\MK-ARM\M4_CryptoFW_RngHW_2_0_6.lib</FilePath>
+            </File>
+            <File>
+              <FileName>drv_swj.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\drivers\drv_swj.c</FilePath>
             </File>
           </Files>
         </Group>
