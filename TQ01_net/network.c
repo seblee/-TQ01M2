@@ -46,24 +46,22 @@
 /* Private variables ---------------------------------------------------------*/
 
 /********topic dup qos restained**************/
-iot_topic_param_t iot_sub_topics[MAX_MESSAGE_HANDLERS] =
-    {
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_WATER_NOTICE"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PARAMETER_SET"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PARAMETER_GET"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_UPGRADE"}*/
+iot_topic_param_t iot_sub_topics[MAX_MESSAGE_HANDLERS] = {
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_WATER_NOTICE"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PARAMETER_SET"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PARAMETER_GET"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_UPGRADE"}*/
 };
 /********topic dup qos restained**************/
-iot_topic_param_t iot_pub_topics[8] =
-    {
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PLATFORM_INIT"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_WATER_STATUS"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PARAMETER_PUT"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_REALTIME_REPORT"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_TIMING_REPORT"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_DEVICE_UPGRADE"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_INFORM"}*/
-        {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_PROGRESS"}*/
+iot_topic_param_t iot_pub_topics[8] = {
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PLATFORM_INIT"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_WATER_STATUS"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PARAMETER_PUT"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_REALTIME_REPORT"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_TIMING_REPORT"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_DEVICE_UPGRADE"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_INFORM"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_PROGRESS"}*/
 };
 static MQTTClient client;
 extern sys_reg_st g_sys;
@@ -249,7 +247,7 @@ void network_Serialize_inform_json(char **datapoint)
         LOG_D("[%d] construct JS_paprms faild !", rt_tick_get());
         goto __exit;
     }
-    result = cJSON_AddStringToObject(JS_paprms, "version", "0.0.3");
+    result = cJSON_AddStringToObject(JS_paprms, "version", "01.01.00");
     if (result == NULL)
         LOG_D("[%d] JSON add err", rt_tick_get());
     cJSON_AddItemToObject(root, "params", JS_paprms);
@@ -257,8 +255,8 @@ void network_Serialize_inform_json(char **datapoint)
     *datapoint = cJSON_PrintUnformatted(root);
 __exit:
     cJSON_Delete(root);
-    // if (*datapoint)
-    //     LOG_D("[%d] JSON len:%d", rt_tick_get(), strlen(*datapoint));
+    if (*datapoint)
+        LOG_D("[%d] JSON len:%d---%s", rt_tick_get(), strlen(*datapoint), *datapoint);
 }
 
 /**

@@ -17,6 +17,7 @@
 #include "utils_hmac.h"
 #include "paho_mqtt.h"
 #include "sys_status.h"
+#include "crypto.h"
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
@@ -29,7 +30,7 @@
 #define mqtt_log(...)
 #endif /* ! CONFIG_DEBUG */
 
-// #define DBG_ENABLE
+#define DBG_ENABLE
 #define DBG_SECTION_NAME "mqtt"
 #ifdef MQTT_DEBUG
 #define DBG_LEVEL DBG_LOG
@@ -162,9 +163,9 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
     client_con.clientID.cstring = (char *)device_connect.client_id;
     client_con.username.cstring = (char *)device_connect.username;
     client_con.password.cstring = (char *)device_connect.password;
-    LOG_D("clientID:%s", client_con.clientID.cstring);
-    LOG_D("username:%s", client_con.username.cstring);
-    LOG_D("password:%s", client_con.password.cstring);
+    // LOG_D("clientID:%s", client_con.clientID.cstring);
+    // LOG_D("username:%s", client_con.username.cstring);
+    // LOG_D("password:%s", client_con.password.cstring);
 
     {
         char mqtt_uri[100] = {0};
@@ -187,9 +188,9 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
     LOG_D("client->uri:%s", client->uri);
     /* config connect param */
     memcpy(&client->condata, &client_con, sizeof(client_con));
-    LOG_D("client->clientID:%s", client->condata.clientID);
-    LOG_D("client->username:%s", client->condata.username);
-    LOG_D("client->password:%s", client->condata.password);
+    // LOG_D("client->clientID:%s", client->condata.clientID);
+    // LOG_D("client->username:%s", client->condata.username);
+    // LOG_D("client->password:%s", client->condata.password);
 
     /* config MQTT will param. */
     // client->condata.willFlag = 1;
@@ -384,6 +385,8 @@ rt_err_t mqtt_setup_connect_info(iotx_conn_info_t *conn, iotx_device_info_t *dev
     rt_err_t rc = RT_EOK;
     char guider_sign[GUIDER_SIGN_LEN] = {0};
     char hmac_source[512] = {0};
+    HMAC_MD5ctx_stt HMAC_MD5ctx_st;
+    uint32_t error_status = HASH_SUCCESS;
 
     if (device_info->flag != IOT_SID_FLAG)
     {
@@ -402,7 +405,9 @@ rt_err_t mqtt_setup_connect_info(iotx_conn_info_t *conn, iotx_device_info_t *dev
                 device_info->device_id, device_info->device_name, device_info->product_key);
     // LOG_D("host_name:%s", conn->host_name);
     // LOG_D("username:%s", conn->username);
-    // LOG_D("hmac_source:%s", hmac_source);
+    LOG_D("hmac_source:%s", hmac_source);
+    LOG_D("device_secret:%s", device_info->device_secret);
+
     utils_hmac_md5(hmac_source, strlen(hmac_source),
                    guider_sign,
                    device_info->device_secret,
@@ -411,6 +416,48 @@ rt_err_t mqtt_setup_connect_info(iotx_conn_info_t *conn, iotx_device_info_t *dev
                 "%s",
                 guider_sign);
     LOG_D("password:%s", conn->password);
+
+    HMAC_MD5ctx_st.mFlags = E_HASH_DEFAULT;
+    HMAC_MD5ctx_st.mTagSize = CRL_MD5_SIZE;
+    LOG_D("hmac_source:%s", hmac_source);
+    LOG_D("device_secret:%s", device_info->device_secret);
+    Crypto_DeInit();
+    HMAC_MD5ctx_st.pmKey = (const uint8_t *)(device_info->device_secret);
+    HMAC_MD5ctx_st.mKeySize = strlen(device_info->device_secret);
+    error_status = HMAC_MD5_Init(&HMAC_MD5ctx_st);
+    /* check for initialization errors */
+    if (error_status == HASH_SUCCESS)
+    {
+        /* Add data to be hashed */
+        error_status = HMAC_MD5_Append(&HMAC_MD5ctx_st,
+                                       (const uint8_t *)hmac_source,
+                                       strlen(hmac_source));
+
+        if (error_status == HASH_SUCCESS)
+        {
+            int32_t P_pOutputSize;
+            rt_memset(guider_sign, 0, GUIDER_SIGN_LEN);
+            /* retrieve */
+            error_status = HMAC_MD5_Finish(&HMAC_MD5ctx_st, (uint8_t *)guider_sign, &P_pOutputSize);
+            if (error_status == HASH_SUCCESS)
+            {
+                LOG_D("OutputSize:%d,password:%02x", P_pOutputSize, guider_sign[0]);
+                rt_kprintf("\r\npassword:");
+                for (int i = 0; i < P_pOutputSize; i++)
+                {
+                    rt_kprintf("%02x", guider_sign[i]);
+                }
+                rt_kprintf("\r\n");
+            }
+            else
+                LOG_E("HMAC_MD5_Append err:%d", error_status);
+        }
+        else
+            LOG_E("HMAC_MD5_Finish err:%d", error_status);
+    }
+    else
+        LOG_E("HMAC_MD5_Init err:%d", error_status);
+
     // if (conn->style == IOT_WIFI_MODE)
     //     rt_snprintf(conn->client_id, sizeof(conn->client_id),
     //                 "%s"

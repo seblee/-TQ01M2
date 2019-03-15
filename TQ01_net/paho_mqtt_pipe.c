@@ -511,7 +511,7 @@ static int getNextPacketId(MQTTClient *c)
 }
 
 static int MQTTConnect(MQTTClient *c)
-{ 
+{
     int rc = -1, len;
     MQTTPacket_connectData *options = &c->condata;
 
@@ -863,7 +863,7 @@ _mqtt_start:
         goto _mqtt_disconnect;
     }
 
-    // LOG_I("[%d]MQTT server connect success", rt_tick_get());
+    LOG_I("[%d]MQTT server connect success", rt_tick_get());
 
     for (i = 0; i < MAX_MESSAGE_HANDLERS; i++)
     {
@@ -872,10 +872,10 @@ _mqtt_start:
 
         if (topic == RT_NULL)
             continue;
-        // LOG_I("Subscribe>>Qos:%d,Subscribe:%s", qos, topic);
+        LOG_I("Subscribe>>Qos:%d,Subscribe:%s", qos, topic);
 
         rc = MQTTSubscribe(c, topic, qos);
-        // LOG_I("Subscribe #%d %s %s!", i, topic, (rc < 0) || (rc == 0x80) ? ("fail") : ("OK"));
+        LOG_I("Subscribe #%d %s %s!", i, topic, (rc < 0) || (rc == 0x80) ? ("fail") : ("OK"));
 
         if (rc != 0)
         {

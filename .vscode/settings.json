@@ -8,6 +8,16 @@
         "board.h": "c",
         "usart.h": "c",
         "team.h": "c",
-        "req_execution.h": "c"
+        "req_execution.h": "c",
+        "utils_hmac.h": "c",
+        "sys_conf.h": "c",
+        "crypto.h": "c",
+        "mqtt_client.h": "c",
+        "mqttpacket.h": "c",
+        "network.h": "c",
+        "utils_md5.h": "c",
+        "rsa_low_level.h": "c",
+        "config.h": "c",
+        "paho_mqtt.h": "c"
     }
 }
