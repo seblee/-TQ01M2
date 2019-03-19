@@ -153,6 +153,11 @@
 #define PKG_PAHOMQTT_SUBSCRIBE_HANDLERS 4
 #define MQTT_DEBUG
 #define PKG_USING_PAHOMQTT_LATEST
+#define PKG_USING_WEBCLIENT
+#define WEBCLIENT_USING_SAMPLES
+#define WEBCLIENT_USING_TLS
+#define WEBCLIENT_USING_MBED_TLS
+#define PKG_USING_WEBCLIENT_V201
 #define PKG_USING_CJSON
 #define PKG_USING_CJSON_V102
 
@@ -169,14 +174,29 @@
 #define AT_DEVICE_SOCKETS_NUM 5
 #define AT_DEVICE_NAME "uart3"
 #define AT_DEVICE_RECV_BUFF_LEN 2048
-#define AT_DEVICE_WIFI_SSID "rtthread"
-#define AT_DEVICE_WIFI_PASSWORD "12345678"
+#define AT_DEVICE_WIFI_SSID "Cloudwater"
+#define AT_DEVICE_WIFI_PASSWORD "tqcd2018"
 #define PKG_USING_AT_DEVICE_LATEST_VERSION
 #define PKG_AT_DEVICE_VER_NUM 0x99999
 
 /* IoT Cloud */
 
+#define PKG_USING_OTA_DOWNLOADER
+#define PKG_USING_HTTP_OTA
+#define PKG_HTTP_OTA_URL "https://iotx-ota.oss-cn-shanghai.aliyuncs.com/ota/f8e8147f7b8a2b43b90cb00980eb1a49/cjt9v7wzp00013b748sic0awy.bin?Expires=1553050547&OSSAccessKeyId=cS8uRRy54RszYWna&Signature=nZFLfetKgt%2BM0N6BUTlpKsA%2FqTE%3D"
+#define PKG_USING_OTA_DOWNLOADER_LATEST_VERSION
+
 /* security packages */
+
+#define PKG_USING_MBEDTLS
+
+/* Select Root Certificate */
+
+#define MBEDTLS_AES_ROM_TABLES
+#define MBEDTLS_ECP_WINDOW_SIZE 2
+#define MBEDTLS_SSL_MAX_CONTENT_LEN 0x3000
+#define MBEDTLS_CONFIG_FILE "tls_config.h"
+#define PKG_USING_MBEDTLS_V260
 
 /* language packages */
 
@@ -185,6 +205,12 @@
 /* tools packages */
 
 /* system packages */
+
+#define PKG_USING_FAL
+#define FAL_DEBUG_CONFIG
+#define FAL_DEBUG 1
+#define FAL_PART_HAS_TABLE_CFG
+#define PKG_USING_FAL_LATEST_VERSION
 
 /* peripheral libraries and drivers */
 

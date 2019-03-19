@@ -10,3 +10,12 @@
 [submodule "packages/mbedtls-v2.6.0"]
 	path = packages/mbedtls-v2.6.0
 	url = git@github.com:seblee/mbedtls.git
+[submodule "packages/webclient-v2.0.1"]
+	path = packages/webclient-v2.0.1
+	url = git@github.com:seblee/webclient.git
+[submodule "packages/fal-latest"]
+	path = packages/fal-latest
+	url = git@github.com:seblee/fal.git
+[submodule "packages/ota_downloader-latest"]
+	path = packages/ota_downloader-latest
+	url = git@github.com:seblee/ota_downloader.git
