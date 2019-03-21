@@ -18,11 +18,12 @@
 
 #ifndef _IOTX_COMMON_MD5_H_
 #define _IOTX_COMMON_MD5_H_
-
 #include <rtthread.h>
+#include "crypto.h"
+#ifndef INCLUDE_MD5
 #include "sys_conf.h"
 
-#define uint32_t rt_uint32_t 
+#define uint32_t rt_uint32_t
 
 typedef struct
 {
@@ -81,6 +82,8 @@ void utils_md5_finish(iot_md5_context *ctx, unsigned char output[16]);
 /* Internal use */
 void utils_md5_process(iot_md5_context *ctx, const unsigned char data[64]);
 
+#endif
+
 /**
  * \brief          Output = MD5( input buffer )
  *
@@ -88,7 +91,7 @@ void utils_md5_process(iot_md5_context *ctx, const unsigned char data[64]);
  * \param ilen     length of the input data
  * \param output   MD5 checksum result
  */
-void utils_md5(const unsigned char *input, size_t ilen, unsigned char output[16]);
+int32_t utils_md5(const unsigned char *input, size_t ilen, unsigned char output[16]);
 
 int8_t utils_hb2hex(uint8_t hb);
 

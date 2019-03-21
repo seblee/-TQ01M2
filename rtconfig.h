@@ -183,7 +183,7 @@
 
 #define PKG_USING_OTA_DOWNLOADER
 #define PKG_USING_HTTP_OTA
-#define PKG_HTTP_OTA_URL "https://iotx-ota.oss-cn-shanghai.aliyuncs.com/ota/f8e8147f7b8a2b43b90cb00980eb1a49/cjt9v7wzp00013b748sic0awy.bin?Expires=1553050547&OSSAccessKeyId=cS8uRRy54RszYWna&Signature=nZFLfetKgt%2BM0N6BUTlpKsA%2FqTE%3D"
+#define PKG_HTTP_OTA_URL "https://iotx-ota.oss-cn-shanghai.aliyuncs.com/ota/f8e8147f7b8a2b43b90cb00980eb1a49/cjt9v7wzp00013b748sic0awy.bin?Expires=1553244202&OSSAccessKeyId=cS8uRRy54RszYWna&Signature=ae%2B1wxwd%2BLZ8sE3B6tRIw9hBrPo%3D"
 #define PKG_USING_OTA_DOWNLOADER_LATEST_VERSION
 
 /* security packages */
@@ -195,7 +195,7 @@
 #define MBEDTLS_AES_ROM_TABLES
 #define MBEDTLS_ECP_WINDOW_SIZE 2
 #define MBEDTLS_SSL_MAX_CONTENT_LEN 0x3000
-#define MBEDTLS_CONFIG_FILE "tls_config.h"
+//#define MBEDTLS_CONFIG_FILE "tls_config.h"
 #define PKG_USING_MBEDTLS_V260
 
 /* language packages */

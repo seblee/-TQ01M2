@@ -18,6 +18,18 @@
 
 #include "utils_md5.h"
 #include "utils_hmac.h"
+#include <rtthread.h>
+
+// #define DBG_ENABLE
+#define DBG_SECTION_NAME "hmac"
+#define DBG_LEVEL DBG_INFO
+#define DBG_COLOR
+#include <rtdbg.h>
+#ifndef LOG_D
+#error "Please update the 'rtdbg.h' file to GitHub latest version (https://github.com/RT-Thread/rt-thread/blob/master/include/rtdbg.h)"
+#endif
+
+#ifndef INCLUDE_HMAC
 #include "sys_conf.h"
 
 #define KEY_IOPAD_SIZE 64
@@ -78,6 +90,64 @@ void utils_hmac_md5(const char *msg, int msg_len, char *digest, const char *key,
         digest[i * 2 + 1] = utils_hb2hex(out[i]);
     }
 }
+
+#else
+
+uint32_t utils_hmac_md5(const char *msg, int msg_len, char *digest, const char *key, int key_len)
+{
+    HMAC_MD5ctx_stt HMAC_MD5ctx_st;
+    uint32_t error_status = HASH_SUCCESS;
+
+    HMAC_MD5ctx_st.mFlags = E_HASH_DEFAULT;
+    HMAC_MD5ctx_st.mTagSize = CRL_MD5_SIZE;
+    LOG_D("msg:%s", msg);
+    LOG_D("key:%s", key);
+    Crypto_DeInit();
+    HMAC_MD5ctx_st.pmKey = (const uint8_t *)(key);
+    HMAC_MD5ctx_st.mKeySize = key_len;
+    error_status = HMAC_MD5_Init(&HMAC_MD5ctx_st);
+    /* check for initialization errors */
+    if (error_status == HASH_SUCCESS)
+    {
+        /* Add data to be hashed */
+        error_status = HMAC_MD5_Append(&HMAC_MD5ctx_st, (const uint8_t *)msg, msg_len);
+
+        if (error_status == HASH_SUCCESS)
+        {
+            int32_t P_pOutputSize;
+            int8_t OutputBuffer[16];
+            rt_memset(digest, 0, 32);
+            /* retrieve */
+            error_status = HMAC_MD5_Finish(&HMAC_MD5ctx_st, (uint8_t *)OutputBuffer, &P_pOutputSize);
+            if (error_status == HASH_SUCCESS)
+            {
+               // rt_kprintf("\r\nOutputSize:%dmd5:", P_pOutputSize);
+                for (int i = 0; i < P_pOutputSize; ++i)
+                {
+                    digest[i * 2] = utils_hb2hex(OutputBuffer[i] >> 4);
+                    digest[i * 2 + 1] = utils_hb2hex(OutputBuffer[i]);
+                }
+
+              //  LOG_D("digest:%s", digest);
+            }
+            else
+            {
+                LOG_E("HMAC_MD5_Append err:%d", error_status);
+            }
+        }
+        else
+        {
+            LOG_E("HMAC_MD5_Finish err:%d", error_status);
+        }
+    }
+    else
+    {
+        LOG_E("HMAC_MD5_Init err:%d", error_status);
+    }
+    return error_status;
+}
+
+#endif
 
 // void utils_hmac_sha1(const char *msg, int msg_len, char *digest, const char *key, int key_len)
 // {

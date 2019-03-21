@@ -16,16 +16,15 @@
  *
  */
 
-
-
 #ifndef _IOTX_COMMON_HMAC_H_
 #define _IOTX_COMMON_HMAC_H_
-
+#include "crypto.h"
+#ifndef INCLUDE_HMAC
 #include <string.h>
+#else
+#endif
+uint32_t utils_hmac_md5(const char *msg, int msg_len, char *digest, const char *key, int key_len);
 
-void utils_hmac_md5(const char *msg, int msg_len, char *digest, const char *key, int key_len);
-
-void utils_hmac_sha1(const char *msg, int msg_len, char *digest, const char *key, int key_len);
+// void utils_hmac_sha1(const char *msg, int msg_len, char *digest, const char *key, int key_len);
 
 #endif
-

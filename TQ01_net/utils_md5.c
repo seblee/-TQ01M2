@@ -16,9 +16,20 @@
  *
  */
 
+#include "utils_md5.h"
+
+// #define DBG_ENABLE
+#define DBG_SECTION_NAME "hmac"
+#define DBG_LEVEL DBG_INFO
+#define DBG_COLOR
+#include <rtdbg.h>
+#ifndef LOG_D
+#error "Please update the 'rtdbg.h' file to GitHub latest version (https://github.com/RT-Thread/rt-thread/blob/master/include/rtdbg.h)"
+#endif
+
+#ifndef INCLUDE_MD5
 #include <stdlib.h>
 #include <string.h>
-#include "utils_md5.h"
 
 #define MD5_DIGEST_SIZE 16
 
@@ -303,6 +314,49 @@ void utils_md5(const unsigned char *input, size_t ilen, unsigned char output[16]
     utils_md5_finish(&ctx, output);
     utils_md5_free(&ctx);
 }
+
+#else
+
+/*
+ * output = MD5( input buffer )
+ */
+int32_t utils_md5(const unsigned char *input, size_t ilen, unsigned char output[16])
+{
+    MD5ctx_stt MD5ctx_st;
+    uint32_t error_status = HASH_SUCCESS;
+
+    MD5ctx_st.mFlags = E_HASH_DEFAULT;
+    MD5ctx_st.mTagSize = CRL_MD5_SIZE;
+    Crypto_DeInit();
+    error_status = MD5_Init(&MD5ctx_st);
+    if (error_status == HASH_SUCCESS)
+    {
+        error_status = MD5_Append(&MD5ctx_st, input, ilen);
+        if (error_status == HASH_SUCCESS)
+        {
+            int32_t P_pOutputSize;
+            error_status = MD5_Finish(&MD5ctx_st, output, &P_pOutputSize);
+            if (error_status == HASH_SUCCESS)
+            {
+              //  LOG_E("nOutputSize%d", P_pOutputSize);
+            }
+            else
+            {
+                LOG_E("MD5_Finish err:%d", error_status);
+            }
+        }
+        else
+        {
+            LOG_E("MD5_Append err:%d", error_status);
+        }
+    }
+    else
+    {
+        LOG_E("MD5_Init err:%d", error_status);
+    }
+    return error_status;
+}
+#endif
 
 int8_t utils_hb2hex(uint8_t hb)
 {

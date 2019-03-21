@@ -1078,11 +1078,6 @@
               <FilePath>.\packages\mbedtls-v2.6.0\mbedtls\library\ssl_srv.c</FilePath>
             </File>
             <File>
-              <FileName>ssl_ticket.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\packages\mbedtls-v2.6.0\mbedtls\library\ssl_ticket.c</FilePath>
-            </File>
-            <File>
               <FileName>ssl_tls.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\packages\mbedtls-v2.6.0\mbedtls\library\ssl_tls.c</FilePath>
