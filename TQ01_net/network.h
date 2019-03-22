@@ -47,13 +47,13 @@
 #define TQ01E1_DIR_PIN GPIO_Pin_6
 #define TQ01E1_PORT_RCC RCC_AHB1Periph_GPIOE
 
-#define DIR_8266()                                       \
-   {                                                    \
-         GPIO_SetBits(TQ01E1_DIR_PORT, TQ01E1_DIR_PIN); \
-     }
-#define DIR_7600()                                         \
-    {                                                      \
-         GPIO_ResetBits(TQ01E1_DIR_PORT, TQ01E1_DIR_PIN); \
+#define DIR_8266()                                     \
+    {                                                  \
+        GPIO_SetBits(TQ01E1_DIR_PORT, TQ01E1_DIR_PIN); \
+    }
+#define DIR_7600()                                       \
+    {                                                    \
+        GPIO_ResetBits(TQ01E1_DIR_PORT, TQ01E1_DIR_PIN); \
     }
 
 #define aliyun_domain "%s.iot-as-mqtt.cn-shanghai.aliyuncs.com"
@@ -158,6 +158,8 @@ void network_get_interval(unsigned int *real, unsigned int *timing);
 rt_err_t network_parameter_get_parse(const char *Str);
 
 rt_err_t network_parameter_set_parse(const char *Str);
+
+rt_err_t network_parameter_upgrade_parse(const char *Str);
 
 rt_err_t network_register_parse(const char *Str, iotx_device_info_t *device_info);
 

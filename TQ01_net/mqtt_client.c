@@ -88,14 +88,26 @@ static void mqtt_PARAMETER_GET_callback(MQTTClient *c, MessageData *msg_data)
         c->isparameterPutted = 0;
     return;
 }
-static void mqtt_sub_callback(MQTTClient *c, MessageData *msg_data)
+static void mqtt_PARAMETER_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
 {
     *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
-    // LOG_D("mqtt sub callback: %.*s %.*s",
-    //       msg_data->topicName->lenstring.len,
-    //       msg_data->topicName->lenstring.data,
-    //       msg_data->message->payloadlen,
-    //       (char *)msg_data->message->payload);
+    LOG_D("mqtt sub callback: %.*s %.*s",
+          msg_data->topicName->lenstring.len,
+          msg_data->topicName->lenstring.data,
+          msg_data->message->payloadlen,
+          (char *)msg_data->message->payload);
+    if (network_parameter_get_parse((const char *)msg_data->message->payload) == RT_EOK)
+        c->isparameterPutted = 0;
+    return;
+}
+RT_USED static void mqtt_sub_callback(MQTTClient *c, MessageData *msg_data)
+{
+    *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
+    LOG_D("mqtt sub callback: %.*s %.*s",
+          msg_data->topicName->lenstring.len,
+          msg_data->topicName->lenstring.data,
+          msg_data->message->payloadlen,
+          (char *)msg_data->message->payload);
     return;
 }
 
@@ -277,7 +289,7 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
         iot_sub_topics[OTA_UPGRADE].topic_str = topic_str_p;
         client->messageHandlers[OTA_UPGRADE].topicFilter =
             (char *)iot_sub_topics[OTA_UPGRADE].topic_str;
-        client->messageHandlers[OTA_UPGRADE].callback = mqtt_sub_callback;
+        client->messageHandlers[OTA_UPGRADE].callback = mqtt_PARAMETER_UPGRADE_callback;
         client->messageHandlers[OTA_UPGRADE].qos = iot_sub_topics[OTA_UPGRADE].qos;
     }
 

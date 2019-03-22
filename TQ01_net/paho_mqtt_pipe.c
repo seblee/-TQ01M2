@@ -872,10 +872,8 @@ _mqtt_start:
 
         if (topic == RT_NULL)
             continue;
-        LOG_I("Subscribe>>Qos:%d,Subscribe:%s", qos, topic);
-
         rc = MQTTSubscribe(c, topic, qos);
-        LOG_I("Subscribe #%d %s %s!", i, topic, (rc < 0) || (rc == 0x80) ? ("fail") : ("OK"));
+        // LOG_I("Subscribe #%d %s %s!", i, topic, (rc < 0) || (rc == 0x80) ? ("fail") : ("OK"));
 
         if (rc != 0)
         {
@@ -1004,6 +1002,11 @@ _mqtt_start:
             } /* res == 0: timeount for ping. */
             // break;
             case SENDEDINIT:
+            {
+                sendState++;
+                c->isQRcodegeted = 1;
+                continue;
+             }
             case SENDINIT:
                 len = mq_client_publish(c, PLATFORM_INIT);
                 break;

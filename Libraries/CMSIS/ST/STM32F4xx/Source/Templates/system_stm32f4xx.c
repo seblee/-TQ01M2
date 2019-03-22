@@ -185,8 +185,8 @@
   * @{
   */
 
-static void SetSysClock(void);
-static void SetSysClock_HSI(void);
+__attribute__((used)) static void SetSysClock(void);
+__attribute__((used)) static void SetSysClock_HSI(void);
 #ifdef DATA_IN_ExtSRAM
   static void SystemInit_ExtMemCtl(void); 
 #endif /* DATA_IN_ExtSRAM */

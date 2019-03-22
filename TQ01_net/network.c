@@ -20,6 +20,7 @@
 
 #include "cJSON.h"
 #include "utils_md5.h"
+#include "ota.h"
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
@@ -618,6 +619,98 @@ rt_err_t network_parameter_set_parse(const char *Str)
     return rc;
 }
 
+/**
+ ****************************************************************************
+ * @Function : rt_err_t network_parameter_upgrade_parse(const char *Str)
+ * @File     : network.c
+ * @Program  : none
+ * @Created  : 2018-09-27 by seblee
+ * @Brief    :
+ * @Version  : V1.0
+**/
+rt_err_t network_parameter_upgrade_parse(const char *Str)
+{
+    rt_err_t rc;
+    cJSON *root = RT_NULL;
+    LOG_D("[%d] Str:%s", rt_tick_get(), Str);
+    root = cJSON_Parse(Str);
+    if (!root)
+    {
+        LOG_E("[%d] get root faild !", rt_tick_get());
+        rc = -1;
+    }
+    else
+    {
+        cJSON *js_message = cJSON_GetObjectItem(root, "message");
+        if (js_message == RT_NULL)
+        {
+            rc = -RT_ERROR;
+            LOG_E("[%d] get js_message err !!!", rt_tick_get());
+            goto __exit;
+        }
+        if (strncmp(js_message->valuestring, "success", strlen("success")) == 0)
+        {
+            cJSON *js_data = cJSON_GetObjectItem(root, "data");
+            if (js_data == RT_NULL)
+            {
+                rc = -RT_ERROR;
+                LOG_E("[%d] get js_data err !!!", rt_tick_get());
+            }
+            else
+            {
+                app_struct app_info;
+                rt_memset(&app_info, 0, sizeof(app_struct));
+                cJSON *js_size = cJSON_GetObjectItem(js_data, "size");
+                if (js_size == RT_NULL)
+                {
+                    rc = -RT_ERROR;
+                    LOG_E("[%d] get js_size err !!!", rt_tick_get());
+                    goto __exit;
+                }
+                app_info.size = js_size->valueint;
+
+                cJSON *js_md5 = cJSON_GetObjectItem(js_data, "md5");
+                if (js_md5 == RT_NULL)
+                {
+                    rc = -RT_ERROR;
+                    LOG_E("[%d] get js_md5 err !!!", rt_tick_get());
+                    goto __exit;
+                }
+                rt_strncpy(app_info.md5, js_md5->valuestring, sizeof(app_info.md5));
+
+                cJSON *js_version = cJSON_GetObjectItem(js_data, "version");
+                if (js_version == RT_NULL)
+                {
+                    rc = -RT_ERROR;
+                    LOG_E("[%d] get js_version err !!!", rt_tick_get());
+                    goto __exit;
+                }
+                rt_strncpy(app_info.version, js_version->valuestring, sizeof(app_info.version));
+
+                cJSON *js_url = cJSON_GetObjectItem(js_data, "url");
+                if (js_url == RT_NULL)
+                {
+                    rc = -RT_ERROR;
+                    LOG_E("[%d] get js_url err !!!", rt_tick_get());
+                    goto __exit;
+                }
+                rt_strncpy(app_info.url, js_url->valuestring, sizeof(app_info.url));
+            }
+        }
+        else
+        {
+            LOG_D("[%d] message err:%s!", rt_tick_get(), js_message->valuestring);
+            rc = -RT_ERROR;
+            goto __exit;
+        }
+        rc = RT_EOK;
+    }
+
+__exit:
+    if (root)
+        cJSON_Delete(root);
+    return rc;
+}
 /**
  **************************************************************** ************
  * @Function : rt_err_t network_register_parse(const char *Str, iotx_device_info_t *dev_info)
