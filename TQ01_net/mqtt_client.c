@@ -18,6 +18,7 @@
 #include "paho_mqtt.h"
 #include "sys_status.h"
 #include "crypto.h"
+#include "ota.h"
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
@@ -88,16 +89,20 @@ static void mqtt_PARAMETER_GET_callback(MQTTClient *c, MessageData *msg_data)
         c->isparameterPutted = 0;
     return;
 }
-static void mqtt_PARAMETER_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
+static void mqtt_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
 {
+    app_struct_t app_info = RT_NULL;
     *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
     LOG_D("mqtt sub callback: %.*s %.*s",
           msg_data->topicName->lenstring.len,
           msg_data->topicName->lenstring.data,
           msg_data->message->payloadlen,
           (char *)msg_data->message->payload);
-    if (network_parameter_get_parse((const char *)msg_data->message->payload) == RT_EOK)
-        c->isparameterPutted = 0;
+    if (network_upgrade_parse((const char *)msg_data->message->payload, &app_info) == RT_EOK)
+    {
+        c->ota_flag = 1;
+        ota_start(app_info);
+    }
     return;
 }
 RT_USED static void mqtt_sub_callback(MQTTClient *c, MessageData *msg_data)
@@ -153,6 +158,7 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
     client->isconnected = 0;
     client->isQRcodegeted = 0;
     client->isparameterPutted = 0;
+    client->ota_flag = 0;
     /*******init client parameter*********/
     mqtt_log("mqtt_client_init");
 
@@ -289,7 +295,7 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
         iot_sub_topics[OTA_UPGRADE].topic_str = topic_str_p;
         client->messageHandlers[OTA_UPGRADE].topicFilter =
             (char *)iot_sub_topics[OTA_UPGRADE].topic_str;
-        client->messageHandlers[OTA_UPGRADE].callback = mqtt_PARAMETER_UPGRADE_callback;
+        client->messageHandlers[OTA_UPGRADE].callback = mqtt_UPGRADE_callback;
         client->messageHandlers[OTA_UPGRADE].qos = iot_sub_topics[OTA_UPGRADE].qos;
     }
 

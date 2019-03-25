@@ -20,7 +20,7 @@
 
 #include "cJSON.h"
 #include "utils_md5.h"
-#include "ota.h"
+
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
@@ -621,14 +621,14 @@ rt_err_t network_parameter_set_parse(const char *Str)
 
 /**
  ****************************************************************************
- * @Function : rt_err_t network_parameter_upgrade_parse(const char *Str)
+ * @Function : rt_err_t network_upgrade_parse(const char *Str)
  * @File     : network.c
  * @Program  : none
  * @Created  : 2018-09-27 by seblee
  * @Brief    :
  * @Version  : V1.0
 **/
-rt_err_t network_parameter_upgrade_parse(const char *Str)
+rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
 {
     rt_err_t rc;
     cJSON *root = RT_NULL;
@@ -658,8 +658,15 @@ rt_err_t network_parameter_upgrade_parse(const char *Str)
             }
             else
             {
-                app_struct app_info;
-                rt_memset(&app_info, 0, sizeof(app_struct));
+                *app_info = rt_malloc(sizeof(app_struct));
+                if (*app_info == RT_NULL)
+                {
+                    rc = -RT_ERROR;
+                    LOG_E("[%d] rt_malloc memory err !!!", rt_tick_get());
+                    goto __exit;
+                }  (*app_info)->app_flag = FLASH_APP_FLAG_WORD;
+              
+                rt_memset(*app_info, 0, sizeof(app_struct));
                 cJSON *js_size = cJSON_GetObjectItem(js_data, "size");
                 if (js_size == RT_NULL)
                 {
@@ -667,7 +674,7 @@ rt_err_t network_parameter_upgrade_parse(const char *Str)
                     LOG_E("[%d] get js_size err !!!", rt_tick_get());
                     goto __exit;
                 }
-                app_info.size = js_size->valueint;
+                (*app_info)->size = js_size->valueint;
 
                 cJSON *js_md5 = cJSON_GetObjectItem(js_data, "md5");
                 if (js_md5 == RT_NULL)
@@ -676,7 +683,7 @@ rt_err_t network_parameter_upgrade_parse(const char *Str)
                     LOG_E("[%d] get js_md5 err !!!", rt_tick_get());
                     goto __exit;
                 }
-                rt_strncpy(app_info.md5, js_md5->valuestring, sizeof(app_info.md5));
+                rt_strncpy((*app_info)->md5, js_md5->valuestring, sizeof((*app_info)->md5));
 
                 cJSON *js_version = cJSON_GetObjectItem(js_data, "version");
                 if (js_version == RT_NULL)
@@ -685,7 +692,7 @@ rt_err_t network_parameter_upgrade_parse(const char *Str)
                     LOG_E("[%d] get js_version err !!!", rt_tick_get());
                     goto __exit;
                 }
-                rt_strncpy(app_info.version, js_version->valuestring, sizeof(app_info.version));
+                rt_strncpy((*app_info)->version, js_version->valuestring, sizeof((*app_info)->version));
 
                 cJSON *js_url = cJSON_GetObjectItem(js_data, "url");
                 if (js_url == RT_NULL)
@@ -694,7 +701,7 @@ rt_err_t network_parameter_upgrade_parse(const char *Str)
                     LOG_E("[%d] get js_url err !!!", rt_tick_get());
                     goto __exit;
                 }
-                rt_strncpy(app_info.url, js_url->valuestring, sizeof(app_info.url));
+                rt_strncpy((*app_info)->url, js_url->valuestring, sizeof((*app_info)->url));
             }
         }
         else
@@ -709,6 +716,14 @@ rt_err_t network_parameter_upgrade_parse(const char *Str)
 __exit:
     if (root)
         cJSON_Delete(root);
+    if (rc != RT_EOK)
+    {
+        if (*app_info)
+        {
+            rt_free(*app_info);
+            *app_info = RT_NULL;
+        }
+    }
     return rc;
 }
 /**

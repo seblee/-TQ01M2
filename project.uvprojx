@@ -138,7 +138,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -1176,6 +1176,11 @@
               <FileName>http_ota.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\packages\ota_downloader-latest\src\http_ota.c</FilePath>
+            </File>
+            <File>
+              <FileName>ota.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\packages\ota_downloader-latest\src\ota.c</FilePath>
             </File>
           </Files>
         </Group>

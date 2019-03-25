@@ -83,7 +83,10 @@ void utils_md5_finish(iot_md5_context *ctx, unsigned char output[16]);
 void utils_md5_process(iot_md5_context *ctx, const unsigned char data[64]);
 
 #endif
-
+int32_t utils_md5_init(MD5ctx_stt *MD5ctx_st);
+int32_t utils_md5_update(MD5ctx_stt *MD5ctx_st, const unsigned char *input, size_t ilen);
+int32_t utils_md5_finish(MD5ctx_stt *MD5ctx_st, unsigned char output[16]);
+int32_t utils_md5_Finalize(void *md5, char *output_str);
 /**
  * \brief          Output = MD5( input buffer )
  *

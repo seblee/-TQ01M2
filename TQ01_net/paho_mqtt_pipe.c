@@ -817,6 +817,7 @@ enum ClientSend
     SENDPING,
     SENDREALTIME,
     SENDTIMING,
+    OTAING,
 } sendState = SENDINIT;
 
 void current_systime_get(struct tm *ti);
@@ -903,26 +904,35 @@ _mqtt_start:
             {
                 if (c->isparameterPutted)
                 {
-                    long tv_sec_temp; /* seconds */
-                    tick_now = rt_tick_get();
-                    timeout.tv_sec = c->keepAliveInterval - 10 - (tick_now - c->tick_ping) / RT_TICK_PER_SECOND;
-                    sendState = SENDPING;
-                    /**get interval time right now**/
-                    network_get_interval(&c->RealtimeInterval, &c->TimingInterval);
-                    tv_sec_temp = c->TimingInterval - (tick_now - c->tick_timeing) / RT_TICK_PER_SECOND;
-                    if (tv_sec_temp < timeout.tv_sec)
+                    if (c->ota_flag == 0)
                     {
-                        timeout.tv_sec = tv_sec_temp;
-                        sendState = SENDTIMING;
+                        long tv_sec_temp; /* seconds */
+                        tick_now = rt_tick_get();
+                        timeout.tv_sec = c->keepAliveInterval - 10 - (tick_now - c->tick_ping) / RT_TICK_PER_SECOND;
+                        sendState = SENDPING;
+                        /**get interval time right now**/
+                        network_get_interval(&c->RealtimeInterval, &c->TimingInterval);
+                        tv_sec_temp = c->TimingInterval - (tick_now - c->tick_timeing) / RT_TICK_PER_SECOND;
+                        if (tv_sec_temp < timeout.tv_sec)
+                        {
+                            timeout.tv_sec = tv_sec_temp;
+                            sendState = SENDTIMING;
+                        }
+                        tv_sec_temp = c->RealtimeInterval - (tick_now - c->tick_realtime) / RT_TICK_PER_SECOND;
+                        if (tv_sec_temp < timeout.tv_sec)
+                        {
+                            timeout.tv_sec = tv_sec_temp;
+                            sendState = SENDREALTIME;
+                        }
+                        if (timeout.tv_sec <= 5)
+                            timeout.tv_sec = 1;
                     }
-                    tv_sec_temp = c->RealtimeInterval - (tick_now - c->tick_realtime) / RT_TICK_PER_SECOND;
-                    if (tv_sec_temp < timeout.tv_sec)
+                    else
                     {
-                        timeout.tv_sec = tv_sec_temp;
-                        sendState = SENDREALTIME;
+                        /* code */
+                        timeout.tv_sec = 5;
+                     sendState=   OTAING ; 
                     }
-                    if (timeout.tv_sec <= 5)
-                        timeout.tv_sec = 1;
                 }
                 else
                 {
@@ -1006,7 +1016,7 @@ _mqtt_start:
                 sendState++;
                 c->isQRcodegeted = 1;
                 continue;
-             }
+            }
             case SENDINIT:
                 len = mq_client_publish(c, PLATFORM_INIT);
                 break;

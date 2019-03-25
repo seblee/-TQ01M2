@@ -21,6 +21,7 @@
 #include "MQTTPacket.h"
 #include "usart.h"
 #include "paho_mqtt.h"
+#include "ota.h"
 /* Private define ------------------------------------------------------------*/
 /* From device.h */
 #define PRODUCT_KEY_LEN (20)
@@ -159,7 +160,7 @@ rt_err_t network_parameter_get_parse(const char *Str);
 
 rt_err_t network_parameter_set_parse(const char *Str);
 
-rt_err_t network_parameter_upgrade_parse(const char *Str);
+rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info);
 
 rt_err_t network_register_parse(const char *Str, iotx_device_info_t *device_info);
 

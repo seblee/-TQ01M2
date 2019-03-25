@@ -77,6 +77,7 @@ struct MQTTClient
     int isInformed;
     int isQRcodegeted;
     int isparameterPutted;
+    int ota_flag;
     unsigned int keepAliveInterval;
     unsigned int TimingInterval;
     unsigned int RealtimeInterval;
