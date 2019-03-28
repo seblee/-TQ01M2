@@ -17,6 +17,8 @@
 #define RT_IDEL_HOOK_LIST_SIZE 4
 #define IDLE_THREAD_STACK_SIZE 1024
 #define RT_DEBUG
+#define RT_DEBUG_COLOR
+#define RT_DEBUG_MEM_CONFIG
 
 /* Inter-Thread communication */
 
@@ -30,7 +32,7 @@
 
 #define RT_USING_MEMPOOL
 #define RT_USING_MEMHEAP
-#define RT_USING_SMALL_MEM
+#define RT_USING_SMALL_MEM 
 #define RT_USING_HEAP
 
 /* Kernel Device Object */
@@ -150,10 +152,11 @@
 #define PAHOMQTT_PIPE_MODE
 #define PKG_USING_PAHOMQTT_EXAMPLE
 #define RT_PKG_MQTT_THREAD_STACK_SIZE 0x1000
-#define PKG_PAHOMQTT_SUBSCRIBE_HANDLERS 4
+#define PKG_PAHOMQTT_SUBSCRIBE_HANDLERS 5
 #define MQTT_DEBUG
 #define PKG_USING_PAHOMQTT_LATEST
 #define PKG_USING_WEBCLIENT
+#define OTA_DOWNLOADER_DEBUG
 #define WEBCLIENT_USING_SAMPLES
 #define WEBCLIENT_USING_TLS
 #define WEBCLIENT_USING_MBED_TLS
@@ -183,7 +186,7 @@
 
 #define PKG_USING_OTA_DOWNLOADER
 #define PKG_USING_HTTP_OTA
-#define PKG_HTTP_OTA_URL "https://iotx-ota.oss-cn-shanghai.aliyuncs.com/ota/f8e8147f7b8a2b43b90cb00980eb1a49/cjt9v7wzp00013b748sic0awy.bin?Expires=1553244202&OSSAccessKeyId=cS8uRRy54RszYWna&Signature=ae%2B1wxwd%2BLZ8sE3B6tRIw9hBrPo%3D"
+#define PKG_HTTP_OTA_URL "http://www.51autodiy.com/rtthread-stm32f4xx.bin"
 #define PKG_USING_OTA_DOWNLOADER_LATEST_VERSION
 
 /* security packages */

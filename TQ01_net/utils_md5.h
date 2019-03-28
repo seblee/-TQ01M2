@@ -95,7 +95,7 @@ int32_t utils_md5_Finalize(void *md5, char *output_str);
  * \param output   MD5 checksum result
  */
 int32_t utils_md5(const unsigned char *input, size_t ilen, unsigned char output[16]);
-
+int32_t utils_md5_outstr(const unsigned char *input, size_t ilen, char *output_str);
 int8_t utils_hb2hex(uint8_t hb);
 
 #endif

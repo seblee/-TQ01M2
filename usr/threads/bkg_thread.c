@@ -81,6 +81,9 @@ void bkg_thread_entry(void *parameter)
 
         dog();
         rt_thread_delay(1000);
+        // rt_uint32_t total, used, max_used;
+        // rt_memory_info(&total, &used, &max_used);
+        //  rt_kprintf("\r\ntotal:%d,used:%d,max_used:%d\r\n",total, used, max_used);
     }
 }
 

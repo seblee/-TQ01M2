@@ -121,14 +121,14 @@ uint32_t utils_hmac_md5(const char *msg, int msg_len, char *digest, const char *
             error_status = HMAC_MD5_Finish(&HMAC_MD5ctx_st, (uint8_t *)OutputBuffer, &P_pOutputSize);
             if (error_status == HASH_SUCCESS)
             {
-               // rt_kprintf("\r\nOutputSize:%dmd5:", P_pOutputSize);
+                // rt_kprintf("\r\nOutputSize:%dmd5:", P_pOutputSize);
                 for (int i = 0; i < P_pOutputSize; ++i)
                 {
                     digest[i * 2] = utils_hb2hex(OutputBuffer[i] >> 4);
                     digest[i * 2 + 1] = utils_hb2hex(OutputBuffer[i]);
                 }
 
-              //  LOG_D("digest:%s", digest);
+                //  LOG_D("digest:%s", digest);
             }
             else
             {

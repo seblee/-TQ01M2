@@ -34,7 +34,8 @@ typedef uint32_t time_t;
 #define CONF_REG_MAP_NUM 300
 #define CONF_REG_SID_START 200
 #define CONF_REG_SID_NUM 100
-#define SOFTWARE_VER 0x1031
+#define SOFTWARE_VER 0x1080
+#define SOFTWARE_VER_NAME "TQ01M2"
 
 #elif SYS_HMI_TQ_T10
 #define CONF_REG_MAP_NUM 300

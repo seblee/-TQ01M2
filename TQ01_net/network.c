@@ -52,6 +52,7 @@ iot_topic_param_t iot_sub_topics[MAX_MESSAGE_HANDLERS] = {
     {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PARAMETER_SET"}*/
     {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_PARAMETER_GET"}*/
     {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_UPGRADE"}*/
+    {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_OTA_BROADCAST"}*/
 };
 /********topic dup qos restained**************/
 iot_topic_param_t iot_pub_topics[8] = {
@@ -226,17 +227,12 @@ void network_Serialize_init_json(char **datapoint)
 **/
 void network_Serialize_inform_json(char **datapoint)
 {
-
+    char versiontemp[10] = {0};
     /* declare a few. */
     cJSON *root = NULL, *result, *JS_paprms;
 
     /* Our "Video" datatype: */
     root = cJSON_CreateObject();
-    if (!root)
-    {
-        LOG_D("[%d] get root faild !");
-        goto __exit;
-    }
 
     result = cJSON_AddStringToObject(root, "id", "1");
     if (result == NULL)
@@ -248,7 +244,10 @@ void network_Serialize_inform_json(char **datapoint)
         LOG_D("[%d] construct JS_paprms faild !", rt_tick_get());
         goto __exit;
     }
-    result = cJSON_AddStringToObject(JS_paprms, "version", "01.01.00");
+
+    rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", ((SOFTWARE_VER & 0xf000) >> 12), ((SOFTWARE_VER & 0x0f80) >> 7), ((SOFTWARE_VER & 0x007f) >> 0));
+
+    result = cJSON_AddStringToObject(JS_paprms, "version", versiontemp);
     if (result == NULL)
         LOG_D("[%d] JSON add err", rt_tick_get());
     cJSON_AddItemToObject(root, "params", JS_paprms);
@@ -327,6 +326,43 @@ void network_Serialize_para_json(char **datapoint)
     cJSON_Delete(root);
     // if (*datapoint)
     //     LOG_D("[%d] JSON len:%d", rt_tick_get(), strlen(*datapoint));
+}
+void network_Serialize_upgrade_json(char **datapoint)
+{
+    char sign_hex[33] = {0};
+    unsigned char sign[16];
+    char sign_Cache[800] = {0};
+    /* declare a few. */
+    cJSON *root = NULL;
+    /* Our "Video" datatype: */
+    root = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(root, "MCode", "035");
+    cJSON_AddStringToObject(root, "versionName", SOFTWARE_VER_NAME);
+    char versiontemp[10] = {0};
+    rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", ((SOFTWARE_VER & 0xf000) >> 12), ((SOFTWARE_VER & 0x0f80) >> 7), ((SOFTWARE_VER & 0x007f) >> 0));
+    cJSON_AddStringToObject(root, "versionCode", versiontemp);
+    if (device_info.flag != IOT_SID_FLAG)
+        goto __exit;
+    cJSON_AddStringToObject(root, "ProductKey", device_info.product_key);
+    rt_snprintf(sign_Cache, sizeof(sign_Cache), "MCode=035&ProductKey=%s&versionCode=%s&versionName=%s&Key=123456",
+                device_info.product_key, versiontemp, SOFTWARE_VER_NAME);
+
+    utils_md5((const unsigned char *)sign_Cache, strlen(sign_Cache), sign);
+    rt_memset(sign_hex, 0, sizeof(sign_hex));
+    for (rt_uint8_t i = 0; i < 16; ++i)
+    {
+        sign_hex[i * 2] = utils_hb2hex(sign[i] >> 4);
+        sign_hex[i * 2 + 1] = utils_hb2hex(sign[i]);
+    }
+    // LOG_D("[%d] MD5=%s", sign_hex);
+    cJSON_AddItemToObject(root, "Sign", cJSON_CreateString(sign_hex));
+
+    *datapoint = cJSON_PrintUnformatted(root);
+__exit:
+    cJSON_Delete(root);
+    if (*datapoint)
+        LOG_D("[%d] upgrade_json:%s", rt_tick_get(), *datapoint);
 }
 /**
  ****************************************************************************
@@ -621,7 +657,7 @@ rt_err_t network_parameter_set_parse(const char *Str)
 
 /**
  ****************************************************************************
- * @Function : rt_err_t network_upgrade_parse(const char *Str)
+ * @Function : rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
  * @File     : network.c
  * @Program  : none
  * @Created  : 2018-09-27 by seblee
@@ -664,9 +700,10 @@ rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
                     rc = -RT_ERROR;
                     LOG_E("[%d] rt_malloc memory err !!!", rt_tick_get());
                     goto __exit;
-                }  (*app_info)->app_flag = FLASH_APP_FLAG_WORD;
-              
+                }
                 rt_memset(*app_info, 0, sizeof(app_struct));
+
+                (*app_info)->app_flag = FLASH_APP_FLAG_WORD;
                 cJSON *js_size = cJSON_GetObjectItem(js_data, "size");
                 if (js_size == RT_NULL)
                 {
@@ -726,6 +763,100 @@ __exit:
     }
     return rc;
 }
+
+/**
+ ****************************************************************************
+ * @Function : rt_err_t network_broadcast_parse(const char *Str, app_struct **app_info)
+ * @File     : network.c
+ * @Program  : none
+ * @Created  : 2018-09-27 by seblee
+ * @Brief    :
+ * @Version  : V1.0
+**/
+rt_err_t network_broadcast_parse(const char *Str, app_struct **app_info)
+{
+    rt_err_t rc;
+    int MCode_value;
+    cJSON *root = RT_NULL;
+    LOG_D("[%d] Str:%s", rt_tick_get(), Str);
+    root = cJSON_Parse(Str);
+    if (!root)
+    {
+        LOG_E("[%d] get root faild !", rt_tick_get());
+        rc = -1;
+    }
+    else
+    {
+        cJSON *js_MCode = cJSON_GetObjectItem(root, "MCode");
+        sscanf(js_MCode->valuestring, "%d", &MCode_value);
+        LOG_D("[%d] MCode_value:%d !", rt_tick_get(), MCode_value);
+        if (MCode_value == MCode_DEVICE_UPGRADE)
+        {
+            *app_info = rt_malloc(sizeof(app_struct));
+            if (*app_info == RT_NULL)
+            {
+                rc = -RT_ERROR;
+                LOG_E("[%d] rt_malloc memory err !!!", rt_tick_get());
+                goto __exit;
+            }
+            rt_memset(*app_info, 0, sizeof(app_struct));
+
+            (*app_info)->app_flag = FLASH_APP_FLAG_WORD;
+            LOG_D("[%d] get versionName !!!", rt_tick_get());
+            cJSON *js_versionName = cJSON_GetObjectItem(root, "versionName");
+            if (js_versionName == RT_NULL)
+            {
+                rc = -RT_ERROR;
+                LOG_E("[%d] get js_versionName err !!!", rt_tick_get());
+            }
+            LOG_D("versionName:%s", js_versionName->valuestring);
+
+            cJSON *js_version = cJSON_GetObjectItem(root, "versionCode");
+            if (js_version == RT_NULL)
+            {
+                rc = -RT_ERROR;
+                LOG_E("[%d] get js_version err !!!", rt_tick_get());
+                goto __exit;
+            }
+            rt_strncpy((*app_info)->version, js_version->valuestring, sizeof((*app_info)->version));
+
+            cJSON *js_md5 = cJSON_GetObjectItem(root, "Sign");
+            if (js_md5 == RT_NULL)
+            {
+                rc = -RT_ERROR;
+                LOG_E("[%d] get js_md5 err !!!", rt_tick_get());
+                goto __exit;
+            }
+            rt_strncpy((*app_info)->md5, js_md5->valuestring, sizeof((*app_info)->md5));
+
+            cJSON *js_url = cJSON_GetObjectItem(root, "URL");
+            if (js_url == RT_NULL)
+            {
+                rc = -RT_ERROR;
+                LOG_E("[%d] get js_url err !!!", rt_tick_get());
+                goto __exit;
+            }
+            rt_strncpy((*app_info)->url, js_url->valuestring, sizeof((*app_info)->url));
+            rc = RT_EOK;
+        }
+        else
+            rc = -RT_ERROR;
+    }
+
+__exit:
+    if (root)
+        cJSON_Delete(root);
+    if (rc != RT_EOK)
+    {
+        if (*app_info)
+        {
+            rt_free(*app_info);
+            *app_info = RT_NULL;
+        }
+    }
+    return rc;
+}
+
 /**
  **************************************************************** ************
  * @Function : rt_err_t network_register_parse(const char *Str, iotx_device_info_t *dev_info)

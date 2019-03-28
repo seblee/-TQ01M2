@@ -100,8 +100,30 @@ static void mqtt_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
           (char *)msg_data->message->payload);
     if (network_upgrade_parse((const char *)msg_data->message->payload, &app_info) == RT_EOK)
     {
-        c->ota_flag = 1;
-        ota_start(app_info);
+        if (c->ota_flag == 0)
+        {
+            c->ota_flag = 1;
+            ota_start(app_info);
+        }
+    }
+    return;
+}
+static void mqtt_BROADCAST_callback(MQTTClient *c, MessageData *msg_data)
+{
+     app_struct_t app_info = RT_NULL;
+    *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
+    LOG_D("mqtt sub callback: %.*s %.*s",
+          msg_data->topicName->lenstring.len, 
+          msg_data->topicName->lenstring.data,
+          msg_data->message->payloadlen,
+          (char *)msg_data->message->payload);
+    if (network_broadcast_parse((const char *)msg_data->message->payload,&app_info) == RT_EOK)
+    {
+        if (c->ota_flag == 0)
+        {
+            c->ota_flag = 1;
+            ota_start(app_info);
+        }
     }
     return;
 }
@@ -297,6 +319,21 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
             (char *)iot_sub_topics[OTA_UPGRADE].topic_str;
         client->messageHandlers[OTA_UPGRADE].callback = mqtt_UPGRADE_callback;
         client->messageHandlers[OTA_UPGRADE].qos = iot_sub_topics[OTA_UPGRADE].qos;
+
+        length = strlen(TOPIC_OTA_BROADCAST) + strlen(device_info_p->product_key);
+        topic_str_p = rt_calloc(length + 1, 1);
+        if (!topic_str_p)
+        {
+            LOG_E("no memory for OTA_UPGRADE buffer!");
+            rc = -RT_ENOMEM;
+            goto _exit;
+        }
+        rt_snprintf(topic_str_p, length, TOPIC_OTA_BROADCAST, device_info_p->product_key);
+        iot_sub_topics[OTA_BROADCAST].topic_str = topic_str_p;
+        client->messageHandlers[OTA_BROADCAST].topicFilter =
+            (char *)iot_sub_topics[OTA_BROADCAST].topic_str;
+        client->messageHandlers[OTA_BROADCAST].callback = mqtt_BROADCAST_callback;
+        client->messageHandlers[OTA_BROADCAST].qos = iot_sub_topics[OTA_BROADCAST].qos;
     }
 
     /* set default subscribe event callback */

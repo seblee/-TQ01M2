@@ -874,7 +874,7 @@ _mqtt_start:
         if (topic == RT_NULL)
             continue;
         rc = MQTTSubscribe(c, topic, qos);
-        // LOG_I("Subscribe #%d %s %s!", i, topic, (rc < 0) || (rc == 0x80) ? ("fail") : ("OK"));
+        LOG_I("Subscribe #%d %s %s!", i, topic, (rc < 0) || (rc == 0x80) ? ("fail") : ("OK"));
 
         if (rc != 0)
         {
@@ -930,8 +930,8 @@ _mqtt_start:
                     else
                     {
                         /* code */
-                        timeout.tv_sec = 5;
-                     sendState=   OTAING ; 
+                        timeout.tv_sec = 30;
+                        sendState = OTAING;
                     }
                 }
                 else
@@ -983,9 +983,11 @@ _mqtt_start:
             switch (sendState)
             {
             case SENDINFORM:
-                len = mq_client_publish(c, OTA_INFORM);
+                // len = mq_client_publish(c, OTA_INFORM);
+                len = mq_client_publish(c, DEVICE_UPGRADE);
                 break;
             case SENDPING:
+            case OTAING:
             {
                 len = MQTTSerialize_pingreq(c->buf, c->buf_size);
                 rc = sendPacket(c, len);
@@ -1105,8 +1107,12 @@ _mqtt_start:
                 }
                 if (strcmp((const char *)c->readbuf, "REFRESH") == 0)
                 {
-                    disconnect_count++;
                     LOG_D("REFRESH");
+                }
+                if (strcmp((const char *)c->readbuf, "RESET_OTAFLAG") == 0)
+                {
+                    c->ota_flag = 0;
+                    LOG_D("RESET_OTAFLAG");
                 }
             }
         } /* pbulish sock handler. */
@@ -1310,6 +1316,7 @@ static int mq_client_publish(MQTTClient *c, _topic_pub_enmu_t pub_type)
         network_Serialize_report_json(&msg_str, pub_type);
         break;
     case DEVICE_UPGRADE: /*{"TOPIC_DEVICE_UPGRADE"}*/
+        network_Serialize_upgrade_json(&msg_str);
         break;
     default:
         break;

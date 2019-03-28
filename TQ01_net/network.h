@@ -150,9 +150,11 @@ void network_Serialize_inform_json(char **datapoint);
 
 void network_Serialize_para_json(char **datapoint);
 
-rt_err_t network_water_notice_parse(const char *Str);
+void network_Serialize_upgrade_json(char **datapoint);
 
 void network_Serialize_report_json(char **datapoint, rt_uint8_t topic_type);
+
+rt_err_t network_water_notice_parse(const char *Str);
 
 void network_get_interval(unsigned int *real, unsigned int *timing);
 
@@ -161,6 +163,8 @@ rt_err_t network_parameter_get_parse(const char *Str);
 rt_err_t network_parameter_set_parse(const char *Str);
 
 rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info);
+
+rt_err_t network_broadcast_parse(const char *Str, app_struct **app_info);
 
 rt_err_t network_register_parse(const char *Str, iotx_device_info_t *device_info);
 

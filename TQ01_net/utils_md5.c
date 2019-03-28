@@ -320,9 +320,9 @@ int32_t utils_md5_init(MD5ctx_stt *MD5ctx_st)
 {
     uint32_t error_status = HASH_SUCCESS;
 
+    Crypto_DeInit();
     MD5ctx_st->mFlags = E_HASH_DEFAULT;
     MD5ctx_st->mTagSize = CRL_MD5_SIZE;
-    Crypto_DeInit();
     error_status = MD5_Init(MD5ctx_st);
     if (error_status != HASH_SUCCESS)
     {
@@ -347,17 +347,19 @@ int32_t utils_md5_Finalize(void *md5, char *output_str)
     int i;
     unsigned char buf_out[16];
 
-    utils_md5_finish(md5, buf_out);
-     if (error_status != HASH_SUCCESS)
+    error_status = utils_md5_finish(md5, buf_out);
+    if (error_status != HASH_SUCCESS)
     {
         LOG_E("MD5_Finish err:%d", error_status);
+        return error_status;
     }
-    return error_status;   for (i = 0; i < 16; ++i)
+    for (i = 0; i < 16; ++i)
     {
         output_str[i * 2] = utils_hb2hex(buf_out[i] >> 4);
         output_str[i * 2 + 1] = utils_hb2hex(buf_out[i]);
     }
-    output_str[32] = '\0';   return error_status;
+    output_str[32] = '\0';
+    return error_status;
 }
 int32_t utils_md5_finish(MD5ctx_stt *MD5ctx_st, unsigned char output[16])
 {
@@ -370,6 +372,25 @@ int32_t utils_md5_finish(MD5ctx_stt *MD5ctx_st, unsigned char output[16])
     }
     return error_status;
 }
+int32_t utils_md5_outstr(const unsigned char *input, size_t ilen, char *output_str)
+{
+    uint32_t error_status = HASH_SUCCESS;
+
+    unsigned char output[16];
+
+    error_status = utils_md5(input, ilen, output);
+    if (error_status == HASH_SUCCESS)
+    {
+        for (int i = 0; i < 16; ++i)
+        {
+            output_str[i * 2] = utils_hb2hex(output[i] >> 4);
+            output_str[i * 2 + 1] = utils_hb2hex(output[i]);
+        }
+        output_str[32] = '\0';
+    }
+    return error_status;
+}
+
 /*
  * output = MD5( input buffer )
  */
@@ -378,9 +399,9 @@ int32_t utils_md5(const unsigned char *input, size_t ilen, unsigned char output[
     MD5ctx_stt MD5ctx_st;
     uint32_t error_status = HASH_SUCCESS;
 
+    Crypto_DeInit();
     MD5ctx_st.mFlags = E_HASH_DEFAULT;
     MD5ctx_st.mTagSize = CRL_MD5_SIZE;
-    Crypto_DeInit();
     error_status = MD5_Init(&MD5ctx_st);
     if (error_status == HASH_SUCCESS)
     {

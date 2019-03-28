@@ -77,7 +77,7 @@ int main(void)
                                          2048, CPAD_THREAD_PRIO, 5);
     RT_ASSERT(CPAD_slave_thread != RT_NULL);
     if (CPAD_slave_thread != RT_NULL)
-         rt_thread_startup(CPAD_slave_thread);
+        rt_thread_startup(CPAD_slave_thread);
 
     rt_thread_t mbm_fsm_thread;
     mbm_fsm_thread = rt_thread_create("mbm_fsm", mbm_fsm_thread_entry, RT_NULL,
@@ -125,7 +125,6 @@ int main(void)
     testcase_thread = rt_thread_create("testcase",
                                        testcase_thread_entry, RT_NULL,
                                        512, TESTCASE_THREAD_PRIO, 5); // 初始化进程
-
     RT_ASSERT(testcase_thread != RT_NULL);
     if (testcase_thread != RT_NULL)
         rt_thread_startup(testcase_thread);
@@ -134,10 +133,9 @@ int main(void)
     net_thead = rt_thread_create("network",
                                  net_thread_entry, RT_NULL,
                                  3072, NET_THREAD_PRIO, 20); // 初始化进程
-
     RT_ASSERT(net_thead != RT_NULL);
-    if (net_thead != RT_NULL)
-        rt_thread_startup(net_thead);
+    // if (net_thead != RT_NULL)
+    //     rt_thread_startup(net_thead);
 
     return 0;
 }

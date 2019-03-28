@@ -42,6 +42,7 @@ typedef enum
     PARAMETER_SET,    /*{"TOPIC_PARAMETER_SET"}*/
     PARAMETER_GET,    /*{"TOPIC_PARAMETER_GET"}*/
     OTA_UPGRADE,      /*{"IOT_OTA_UPGRADE"}*/
+    OTA_BROADCAST,    /*{"IOT_OTA_UPGRADE"}*/
 } _topic_sub_enmu_t;
 
 typedef enum
@@ -94,6 +95,7 @@ enum MQTT_QoS
 #define TOPIC_REALTIME_REPORT "/%s/%s/monitor/client2Cloud/putRealStatus" /*{"TOPIC_REALTIME_REPORT"}*/
 #define TOPIC_TIMING_REPORT "/%s/%s/monitor/client2Cloud/putTimingStatus" /*{"TOPIC_TIMING_REPORT"}*/
 #define TOPIC_DEVICE_UPGRADE "/%s/%s/monitor/service2Cloud/upgrade"       /*{"TOPIC_DEVICE_UPGRADE"}*/
+#define TOPIC_OTA_BROADCAST "/broadcast/%s/firmwareUpgrade"               /*{"TOPIC_DEVICE_UPGRADE"}*/
 #define TOPIC_DEVICE_MOVE "/%s/%s/move"                                   /*{"DEVICE_MOVE"}*/
 #define TOPIC_DEVICE_UPDATE "/%s/%s/update"                               /*{"DEVICE_UPDATE"}*/
 #define TOPIC_DEVICE_ERR "/%s/%s/update/error"                            /*{"DEVICE_ERR"}*/
