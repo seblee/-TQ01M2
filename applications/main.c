@@ -134,8 +134,8 @@ int main(void)
                                  net_thread_entry, RT_NULL,
                                  3072, NET_THREAD_PRIO, 20); // 初始化进程
     RT_ASSERT(net_thead != RT_NULL);
-    // if (net_thead != RT_NULL)
-    //     rt_thread_startup(net_thead);
+    if (net_thead != RT_NULL)
+        rt_thread_startup(net_thead);
 
     return 0;
 }

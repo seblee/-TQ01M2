@@ -32,7 +32,7 @@
 
 #define RT_USING_MEMPOOL
 #define RT_USING_MEMHEAP
-#define RT_USING_SMALL_MEM 
+#define RT_USING_SMALL_MEM
 #define RT_USING_HEAP
 
 /* Kernel Device Object */
@@ -211,7 +211,6 @@
 
 #define PKG_USING_FAL
 #define FAL_DEBUG_CONFIG
-#define FAL_DEBUG 1
 #define FAL_PART_HAS_TABLE_CFG
 #define PKG_USING_FAL_LATEST_VERSION
 

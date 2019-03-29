@@ -959,14 +959,14 @@ _mqtt_start:
         timeout.tv_usec = 0;
         {
             LOG_I("[%d]State:%d timeout.tv_sec: %d ", rt_tick_get(), sendState, timeout.tv_sec);
-            rt_memory_info(&total, &used, &max_used);
-            struct tm ti;
-            current_systime_get(&ti);
-            LOG_I("[%d]%04d-%02d-%02d %02d:%02d:%02d connect:%d connected:%d disconnect:%d,total:%d,used:%d,max_used:%d",
-                  rt_tick_get(),
-                  ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec,
-                  connect_count, connected_count, disconnect_count,
-                  total, used, max_used);
+//            rt_memory_info(&total, &used, &max_used);
+//            struct tm ti;
+//            current_systime_get(&ti);
+//            LOG_I("[%d]%04d-%02d-%02d %02d:%02d:%02d connect:%d connected:%d disconnect:%d,total:%d,used:%d,max_used:%d",
+//                  rt_tick_get(),
+//                  ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec,
+//                  connect_count, connected_count, disconnect_count,
+//                  total, used, max_used);
         }
 
         FD_ZERO(&readset);
@@ -1113,6 +1113,30 @@ _mqtt_start:
                 {
                     c->ota_flag = 0;
                     LOG_D("RESET_OTAFLAG");
+                }
+                if (strcmp((const char *)c->readbuf, "START_OTA") == 0)
+                {LOG_D("START_OTA");
+                    c->ota_flag = 1;
+                    static app_struct_t app_info_p;
+
+                    app_info_p = rt_calloc(1, sizeof(app_struct_t));
+                    if (app_info_p != RT_NULL)
+                    {
+                        rt_strncpy(app_info_p->url, PKG_HTTP_OTA_URL, sizeof(app_info_p->url));
+                        rt_strncpy(app_info_p->md5, "77FD3C275FFA9B8ACA8A4EA7C39BEA70", sizeof(app_info_p->md5));
+                        rt_strncpy(app_info_p->version, "01.01.01", sizeof(app_info_p->version));
+                        app_info_p->size = 374556;
+                        app_info_p->app_flag = FLASH_APP_FLAG_WORD;
+
+                        ota_start(app_info_p);
+                    }
+                    else
+                    {
+                        LOG_E("rt_calloc ERR");
+                        /* code */
+                    }
+
+                    
                 }
             }
         } /* pbulish sock handler. */

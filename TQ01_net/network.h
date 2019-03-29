@@ -48,14 +48,8 @@
 #define TQ01E1_DIR_PIN GPIO_Pin_6
 #define TQ01E1_PORT_RCC RCC_AHB1Periph_GPIOE
 
-#define DIR_8266()                                     \
-    {                                                  \
-        GPIO_SetBits(TQ01E1_DIR_PORT, TQ01E1_DIR_PIN); \
-    }
-#define DIR_7600()                                       \
-    {                                                    \
-        GPIO_ResetBits(TQ01E1_DIR_PORT, TQ01E1_DIR_PIN); \
-    }
+#define DIR_8266()  PEout(6) = 1 
+#define DIR_7600()  PEout(6) = 0 
 
 #define aliyun_domain "%s.iot-as-mqtt.cn-shanghai.aliyuncs.com"
 #define aliyun_iot_port 1883

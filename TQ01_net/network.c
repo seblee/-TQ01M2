@@ -820,7 +820,7 @@ rt_err_t network_broadcast_parse(const char *Str, app_struct **app_info)
             }
             rt_strncpy((*app_info)->version, js_version->valuestring, sizeof((*app_info)->version));
 
-            cJSON *js_md5 = cJSON_GetObjectItem(root, "Sign");
+            cJSON *js_md5 = cJSON_GetObjectItem(root, "MD5");
             if (js_md5 == RT_NULL)
             {
                 rc = -RT_ERROR;
