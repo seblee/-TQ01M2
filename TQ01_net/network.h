@@ -48,8 +48,8 @@
 #define TQ01E1_DIR_PIN GPIO_Pin_6
 #define TQ01E1_PORT_RCC RCC_AHB1Periph_GPIOE
 
-#define DIR_8266()  PEout(6) = 1 
-#define DIR_7600()  PEout(6) = 0 
+#define DIR_8266() PEout(6) = 1
+#define DIR_7600() PEout(6) = 0
 
 #define aliyun_domain "%s.iot-as-mqtt.cn-shanghai.aliyuncs.com"
 #define aliyun_iot_port 1883
@@ -98,9 +98,9 @@ typedef struct
 typedef struct
 {
     const char *topic_str;
-    rt_uint8_t dup;
-    enum QoS qos;
-    rt_uint8_t restained;
+    const rt_uint8_t dup;
+    const enum QoS qos;
+    const rt_uint8_t restained;
 } iot_topic_param_t;
 
 typedef enum

@@ -802,6 +802,7 @@ static int MQTT_cycle(MQTTClient *c)
         break;
     case PINGRESP:
         c->tick_ping = rt_tick_get();
+        c->ping_outstanding = 0;
         break;
     }
 
@@ -959,14 +960,14 @@ _mqtt_start:
         timeout.tv_usec = 0;
         {
             LOG_I("[%d]State:%d timeout.tv_sec: %d ", rt_tick_get(), sendState, timeout.tv_sec);
-//            rt_memory_info(&total, &used, &max_used);
-//            struct tm ti;
-//            current_systime_get(&ti);
-//            LOG_I("[%d]%04d-%02d-%02d %02d:%02d:%02d connect:%d connected:%d disconnect:%d,total:%d,used:%d,max_used:%d",
-//                  rt_tick_get(),
-//                  ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec,
-//                  connect_count, connected_count, disconnect_count,
-//                  total, used, max_used);
+            // rt_memory_info(&total, &used, &max_used);
+            // struct tm ti;
+            // current_systime_get(&ti);
+            // LOG_I("[%d]%04d-%02d-%02d %02d:%02d:%02d connect:%d connected:%d disconnect:%d,total:%d,used:%d,max_used:%d",
+            //       rt_tick_get(),
+            //       ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec,
+            //       connect_count, connected_count, disconnect_count,
+            //       total, used, max_used);
         }
 
         FD_ZERO(&readset);
@@ -983,34 +984,15 @@ _mqtt_start:
             switch (sendState)
             {
             case SENDINFORM:
-                // len = mq_client_publish(c, OTA_INFORM);
-                len = mq_client_publish(c, DEVICE_UPGRADE);
+                len = mq_client_publish(c, OTA_INFORM);
+                // len = mq_client_publish(c, DEVICE_UPGRADE);
                 break;
             case SENDPING:
             case OTAING:
             {
-                len = MQTTSerialize_pingreq(c->buf, c->buf_size);
-                rc = sendPacket(c, len);
-                if (rc != 0)
-                {
-                    LOG_E("[%d]send ping rc: %d ", rt_tick_get(), rc);
+                rc = keepalive(c);
+                if (rc != PAHO_SUCCESS)
                     goto _mqtt_disconnect;
-                }
-
-                /* wait Ping Response. */
-                timeout.tv_sec = 5;
-                timeout.tv_usec = 0;
-
-                FD_ZERO(&readset);
-                FD_SET(c->sock, &readset);
-
-                res = select(c->sock + 1, &readset, RT_NULL, RT_NULL, &timeout);
-                if (res <= 0)
-                {
-                    LOG_E("[%d]wait Ping Response res: %d", rt_tick_get(), res);
-                    goto _mqtt_disconnect;
-                }
-                goto __receive_;
             } /* res == 0: timeount for ping. */
             // break;
             case SENDEDINIT:
@@ -1033,6 +1015,7 @@ _mqtt_start:
                 len = mq_client_publish(c, TIMING_REPORT);
                 c->tick_timeing = rt_tick_get();
                 break;
+
             default:
                 break;
             }
@@ -1047,19 +1030,21 @@ _mqtt_start:
                 LOG_E("[%d]MQTTSerialize_publish sendPacket rc: %d", rt_tick_get(), rc);
                 goto _mqtt_disconnect;
             }
-
-            /* wait Ping Response. */
-            timeout.tv_sec = 5;
-            timeout.tv_usec = 0;
-
-            FD_ZERO(&readset);
-            FD_SET(c->sock, &readset);
-
-            res = select(c->sock + 1, &readset, RT_NULL, RT_NULL, &timeout);
-            if (res <= 0)
+            if (iot_pub_topics[sendState].qos > QOS0)
             {
-                LOG_E("[%d]wait publish Response res: %d", rt_tick_get(), res);
-                goto _mqtt_disconnect;
+                /* wait Ping Response. */
+                timeout.tv_sec = 5;
+                timeout.tv_usec = 0;
+
+                FD_ZERO(&readset);
+                FD_SET(c->sock, &readset);
+
+                res = select(c->sock + 1, &readset, RT_NULL, RT_NULL, &timeout);
+                if (res <= 0)
+                {
+                    LOG_E("[%d]wait publish Response res: %d", rt_tick_get(), res);
+                    goto _mqtt_disconnect;
+                }
             }
             if (sendState == SENDINFORM)
                 c->isInformed = 1;
@@ -1069,7 +1054,6 @@ _mqtt_start:
                 sendState++;
         }
 
-    __receive_:
         if (res < 0)
         {
             LOG_E("[%d]select res: %d", rt_tick_get(), res);
@@ -1115,7 +1099,8 @@ _mqtt_start:
                     LOG_D("RESET_OTAFLAG");
                 }
                 if (strcmp((const char *)c->readbuf, "START_OTA") == 0)
-                {LOG_D("START_OTA");
+                {
+                    LOG_D("START_OTA");
                     c->ota_flag = 1;
                     static app_struct_t app_info_p;
 
@@ -1135,8 +1120,6 @@ _mqtt_start:
                         LOG_E("rt_calloc ERR");
                         /* code */
                     }
-
-                    
                 }
             }
         } /* pbulish sock handler. */
@@ -1356,6 +1339,30 @@ static int mq_client_publish(MQTTClient *c, _topic_pub_enmu_t pub_type)
     rc = MQTTSerialize_publish(c->buf, c->buf_size, message.dup, message.qos, message.retained, message.id,
                                topic, (unsigned char *)message.payload, message.payloadlen);
     rt_free(msg_str);
+exit:
+    if (len > 0)
+        rc = sendPacket(c, len); // send the ping packet
+
+    return rc;
+}
+
+int keepalive(MQTTClient *c)
+{
+    int rc = SUCCESS;
+    if (!c->isconnected)
+        goto exit;
+
+    if (c->keepAliveInterval == 0)
+        goto exit;
+
+    if (c->ping_outstanding)
+        rc = PAHO_FAILURE; /* PINGRESP not received in keepalive interval */
+    else
+    {
+        int len = MQTTSerialize_pingreq(c->buf, c->buf_size);
+        if (len > 0 && (rc = sendPacket(c, len)) == PAHO_SUCCESS) // send the ping packet
+            c->ping_outstanding = 1;
+    }
 exit:
     return rc;
 }

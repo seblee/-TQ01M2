@@ -100,9 +100,9 @@ static void mqtt_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
           (char *)msg_data->message->payload);
     if (network_upgrade_parse((const char *)msg_data->message->payload, &app_info) == RT_EOK)
     {
-        if (c->ota_flag == 0)
+          if ((c->ota_flag == 0)&&(app_info != RT_NULL))
         {
-            c->ota_flag = 1;
+             c->ota_flag = 1;
             ota_start(app_info);
         }
     }
@@ -110,16 +110,16 @@ static void mqtt_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
 }
 static void mqtt_BROADCAST_callback(MQTTClient *c, MessageData *msg_data)
 {
-     app_struct_t app_info = RT_NULL;
+    app_struct_t app_info = RT_NULL;
     *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
     LOG_D("mqtt sub callback: %.*s %.*s",
-          msg_data->topicName->lenstring.len, 
+          msg_data->topicName->lenstring.len,
           msg_data->topicName->lenstring.data,
-          msg_data->message->payloadlen,
-          (char *)msg_data->message->payload);
-    if (network_broadcast_parse((const char *)msg_data->message->payload,&app_info) == RT_EOK)
+          msg_data->message->payloadlen, 
+          (char *)msg_data->message->payload); 
+    if (network_broadcast_parse((const char *)msg_data->message->payload, &app_info) == RT_EOK)
     {
-        if (c->ota_flag == 0)
+         if ((c->ota_flag == 0)&&(app_info != RT_NULL))
         {
             c->ota_flag = 1;
             ota_start(app_info);

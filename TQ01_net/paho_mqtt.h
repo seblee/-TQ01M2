@@ -79,8 +79,10 @@ struct MQTTClient
     int isparameterPutted;
     int ota_flag;
     unsigned int keepAliveInterval;
+    char ping_outstanding;
     unsigned int TimingInterval;
     unsigned int RealtimeInterval;
+
     uint32_t tick_ping;
     uint32_t tick_timeing;
     uint32_t tick_realtime;
@@ -131,6 +133,8 @@ extern int paho_mqtt_start(MQTTClient *client);
  * @return the error code, 0 on subscribe successfully.
  */
 extern int MQTTPublish(MQTTClient *c, const char *topicName, MQTTMessage *message); /* copy */
+
+int keepalive(MQTTClient *c);
 
 int eland_http_request(http_method method,
                        char *request_uri, //uri

@@ -63,7 +63,7 @@ iot_topic_param_t iot_pub_topics[8] = {
     {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_TIMING_REPORT"}*/
     {RT_NULL, 0, QOS1, 0}, /*{"TOPIC_DEVICE_UPGRADE"}*/
     {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_INFORM"}*/
-    {RT_NULL, 0, QOS1, 0}, /*{"IOT_OTA_PROGRESS"}*/
+    {RT_NULL, 0, QOS0, 0}, /*{"IOT_OTA_PROGRESS"}*/
 };
 static MQTTClient client;
 extern sys_reg_st g_sys;
@@ -730,7 +730,15 @@ rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
                     goto __exit;
                 }
                 rt_strncpy((*app_info)->version, js_version->valuestring, sizeof((*app_info)->version));
-
+                char versiontemp[10] = {0};
+                rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", ((SOFTWARE_VER & 0xf000) >> 12), ((SOFTWARE_VER & 0x0f80) >> 7), ((SOFTWARE_VER & 0x007f) >> 0));
+                if (rt_strncmp(versiontemp, (*app_info)->version, sizeof((*app_info)->version)) == 0) //版本相同不升级 return null
+                {
+                    rc = RT_EOK;
+                    rt_free(*app_info);
+                    *app_info = RT_NULL;
+                    goto __exit;
+                }
                 cJSON *js_url = cJSON_GetObjectItem(js_data, "url");
                 if (js_url == RT_NULL)
                 {
