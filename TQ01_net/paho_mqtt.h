@@ -91,12 +91,12 @@ struct MQTTClient
     void (*online_callback)(MQTTClient *);
     void (*offline_callback)(MQTTClient *);
 
-    struct MessageHandlers
+    struct MessagesubHandlers
     {
         char *topicFilter;
         void (*callback)(MQTTClient *, MessageData *);
         enum QoS qos;
-    } messageHandlers[MAX_MESSAGE_HANDLERS]; /* Message handlers are indexed by subscription topic */
+    } messagesubHandlers[MAX_MESSAGE_HANDLERS];
 
     void (*defaultMessageHandler)(MQTTClient *, MessageData *);
 

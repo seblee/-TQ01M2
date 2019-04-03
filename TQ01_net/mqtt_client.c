@@ -100,9 +100,10 @@ static void mqtt_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
           (char *)msg_data->message->payload);
     if (network_upgrade_parse((const char *)msg_data->message->payload, &app_info) == RT_EOK)
     {
-          if ((c->ota_flag == 0)&&(app_info != RT_NULL))
+        if ((c->ota_flag == 0) && (app_info != RT_NULL))
         {
-             c->ota_flag = 1;
+            mqtt_send_cmd("DISCONNECT");
+            c->ota_flag = 1;
             ota_start(app_info);
         }
     }
@@ -115,12 +116,13 @@ static void mqtt_BROADCAST_callback(MQTTClient *c, MessageData *msg_data)
     LOG_D("mqtt sub callback: %.*s %.*s",
           msg_data->topicName->lenstring.len,
           msg_data->topicName->lenstring.data,
-          msg_data->message->payloadlen, 
-          (char *)msg_data->message->payload); 
+          msg_data->message->payloadlen,
+          (char *)msg_data->message->payload);
     if (network_broadcast_parse((const char *)msg_data->message->payload, &app_info) == RT_EOK)
     {
-         if ((c->ota_flag == 0)&&(app_info != RT_NULL))
+        if ((c->ota_flag == 0) && (app_info != RT_NULL))
         {
+            mqtt_send_cmd("DISCONNECT");
             c->ota_flag = 1;
             ota_start(app_info);
         }
@@ -269,26 +271,26 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
         }
         rt_snprintf(topic_str_p, length, TOPIC_WATER_NOTICE, device_info_p->product_key, device_info_p->device_name);
         iot_sub_topics[WATER_NOTICE].topic_str = topic_str_p;
-        client->messageHandlers[WATER_NOTICE].topicFilter =
+        client->messagesubHandlers[WATER_NOTICE].topicFilter =
             (char *)iot_sub_topics[WATER_NOTICE].topic_str;
-        client->messageHandlers[WATER_NOTICE].callback = mqtt_WATER_NOTICE_callback;
-        client->messageHandlers[WATER_NOTICE].qos = iot_sub_topics[WATER_NOTICE].qos;
+        client->messagesubHandlers[WATER_NOTICE].callback = mqtt_WATER_NOTICE_callback;
+        client->messagesubHandlers[WATER_NOTICE].qos = iot_sub_topics[WATER_NOTICE].qos;
         LOG_D("topic_str:%s", iot_sub_topics[WATER_NOTICE].topic_str);
 
         length = strlen(TOPIC_PARAMETER_SET) + strlen(device_info_p->product_key) + strlen(device_info_p->device_name);
         topic_str_p = rt_calloc(length + 1, 1);
         if (!topic_str_p)
-        {
+        { 
             LOG_E("no memory for PARAMETER_SET buffer!");
             rc = -RT_ENOMEM;
             goto _exit;
         }
         rt_snprintf(topic_str_p, length, TOPIC_PARAMETER_SET, device_info_p->product_key, device_info_p->device_name);
         iot_sub_topics[PARAMETER_SET].topic_str = topic_str_p;
-        client->messageHandlers[PARAMETER_SET].topicFilter =
+        client->messagesubHandlers[PARAMETER_SET].topicFilter =
             (char *)iot_sub_topics[PARAMETER_SET].topic_str;
-        client->messageHandlers[PARAMETER_SET].callback = mqtt_PARAMETER_SET_callback;
-        client->messageHandlers[PARAMETER_SET].qos = iot_sub_topics[PARAMETER_SET].qos;
+        client->messagesubHandlers[PARAMETER_SET].callback = mqtt_PARAMETER_SET_callback;
+        client->messagesubHandlers[PARAMETER_SET].qos = iot_sub_topics[PARAMETER_SET].qos;
 
         length = strlen(TOPIC_PARAMETER_GET) + strlen(device_info_p->product_key) + strlen(device_info_p->device_name);
         topic_str_p = rt_calloc(length + 1, 1);
@@ -300,10 +302,10 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
         }
         rt_snprintf(topic_str_p, length, TOPIC_PARAMETER_GET, device_info_p->product_key, device_info_p->device_name);
         iot_sub_topics[PARAMETER_GET].topic_str = topic_str_p;
-        client->messageHandlers[PARAMETER_GET].topicFilter =
+        client->messagesubHandlers[PARAMETER_GET].topicFilter =
             (char *)iot_sub_topics[PARAMETER_GET].topic_str;
-        client->messageHandlers[PARAMETER_GET].callback = mqtt_PARAMETER_GET_callback;
-        client->messageHandlers[PARAMETER_GET].qos = iot_sub_topics[PARAMETER_GET].qos;
+        client->messagesubHandlers[PARAMETER_GET].callback = mqtt_PARAMETER_GET_callback;
+        client->messagesubHandlers[PARAMETER_GET].qos = iot_sub_topics[PARAMETER_GET].qos;
 
         length = strlen(IOT_OTA_UPGRADE) + strlen(device_info_p->product_key) + strlen(device_info_p->device_name);
         topic_str_p = rt_calloc(length + 1, 1);
@@ -315,10 +317,10 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
         }
         rt_snprintf(topic_str_p, length, IOT_OTA_UPGRADE, device_info_p->product_key, device_info_p->device_name);
         iot_sub_topics[OTA_UPGRADE].topic_str = topic_str_p;
-        client->messageHandlers[OTA_UPGRADE].topicFilter =
+        client->messagesubHandlers[OTA_UPGRADE].topicFilter =
             (char *)iot_sub_topics[OTA_UPGRADE].topic_str;
-        client->messageHandlers[OTA_UPGRADE].callback = mqtt_UPGRADE_callback;
-        client->messageHandlers[OTA_UPGRADE].qos = iot_sub_topics[OTA_UPGRADE].qos;
+        client->messagesubHandlers[OTA_UPGRADE].callback = mqtt_UPGRADE_callback;
+        client->messagesubHandlers[OTA_UPGRADE].qos = iot_sub_topics[OTA_UPGRADE].qos;
 
         length = strlen(TOPIC_OTA_BROADCAST) + strlen(device_info_p->product_key);
         topic_str_p = rt_calloc(length + 1, 1);
@@ -330,10 +332,10 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
         }
         rt_snprintf(topic_str_p, length, TOPIC_OTA_BROADCAST, device_info_p->product_key);
         iot_sub_topics[OTA_BROADCAST].topic_str = topic_str_p;
-        client->messageHandlers[OTA_BROADCAST].topicFilter =
+        client->messagesubHandlers[OTA_BROADCAST].topicFilter =
             (char *)iot_sub_topics[OTA_BROADCAST].topic_str;
-        client->messageHandlers[OTA_BROADCAST].callback = mqtt_BROADCAST_callback;
-        client->messageHandlers[OTA_BROADCAST].qos = iot_sub_topics[OTA_BROADCAST].qos;
+        client->messagesubHandlers[OTA_BROADCAST].callback = mqtt_BROADCAST_callback;
+        client->messagesubHandlers[OTA_BROADCAST].qos = iot_sub_topics[OTA_BROADCAST].qos;
     }
 
     /* set default subscribe event callback */

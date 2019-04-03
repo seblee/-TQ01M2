@@ -701,14 +701,14 @@ static int deliverMessage(MQTTClient *c, MQTTString *topicName, MQTTMessage *mes
     // we have to find the right message handler - indexed by topic
     for (i = 0; i < MAX_MESSAGE_HANDLERS; ++i)
     {
-        if (c->messageHandlers[i].topicFilter != 0 && (MQTTPacket_equals(topicName, (char *)c->messageHandlers[i].topicFilter) ||
-                                                       isTopicMatched((char *)c->messageHandlers[i].topicFilter, topicName)))
+        if (c->messagesubHandlers[i].topicFilter != 0 && (MQTTPacket_equals(topicName, (char *)c->messagesubHandlers[i].topicFilter) ||
+                                                       isTopicMatched((char *)c->messagesubHandlers[i].topicFilter, topicName)))
         {
-            if (c->messageHandlers[i].callback != NULL)
+            if (c->messagesubHandlers[i].callback != NULL)
             {
                 MessageData md;
                 NewMessageData(&md, topicName, message);
-                c->messageHandlers[i].callback(c, &md);
+                c->messagesubHandlers[i].callback(c, &md);
                 rc = PAHO_SUCCESS;
             }
         }
@@ -869,8 +869,8 @@ _mqtt_start:
 
     for (i = 0; i < MAX_MESSAGE_HANDLERS; i++)
     {
-        const char *topic = c->messageHandlers[i].topicFilter;
-        enum QoS qos = c->messageHandlers[i].qos;
+        const char *topic = c->messagesubHandlers[i].topicFilter;
+        enum QoS qos = c->messagesubHandlers[i].qos;
 
         if (topic == RT_NULL)
             continue;
@@ -1340,8 +1340,8 @@ static int mq_client_publish(MQTTClient *c, _topic_pub_enmu_t pub_type)
                                topic, (unsigned char *)message.payload, message.payloadlen);
     rt_free(msg_str);
 exit:
-    if (len > 0)
-        rc = sendPacket(c, len); // send the ping packet
+    // if (rc > 0)
+    //     rc = sendPacket(c, rc); // send the ping packet
 
     return rc;
 }
