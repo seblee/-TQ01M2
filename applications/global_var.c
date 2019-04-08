@@ -1,4 +1,4 @@
-#include <rtthread.h> 
+#include <rtthread.h>
 #include "sys_conf.h"
 #include "calc.h"
 #include "sys_def.h"
@@ -490,6 +490,16 @@ uint16_t set_load_flag(uint8_t ee_load_flag)
     I2C_EE_BufWrite(&ee_flag, STS_EE_ADDR, 1);
     return 1;
 }
+extern void rt_show_version(void);
+long sys_version(void)
+{
+    rt_show_version();
+    rt_kprintf("formwire:%s,%02d.%02d.%02d\n", SOFTWARE_VER_NAME, ((SOFTWARE_VER & 0xf000) >> 12), ((SOFTWARE_VER & 0x0f80) >> 7), ((SOFTWARE_VER & 0x007f) >> 0));
+
+    return 0;
+}
+FINSH_FUNCTION_EXPORT(sys_version, show RT - Thread version information);
+MSH_CMD_EXPORT(sys_version, show RT - Thread version information);
 
 /**
   * @brief 	save system configurable variables initialization
@@ -560,7 +570,7 @@ uint16_t save_conf_reg(uint8_t addr_sel)
                 if (conf_reg[i] != test_reg[i])
                 {
                     err_cnt++;
-                 //   rt_kprintf("\ni = %d,conf_reg=%d,test_reg=%d,err_cnt=%d\n", i, conf_reg[i], test_reg[i], err_cnt);
+                    //   rt_kprintf("\ni = %d,conf_reg=%d,test_reg=%d,err_cnt=%d\n", i, conf_reg[i], test_reg[i], err_cnt);
                 }
             }
             if (err_cnt == 0)

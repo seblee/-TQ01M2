@@ -31,7 +31,7 @@
 #define mqtt_log(...)
 #endif /* ! CONFIG_DEBUG */
 
-#define DBG_ENABLE
+// #define DBG_ENABLE
 #define DBG_SECTION_NAME "mqtt"
 #ifdef MQTT_DEBUG
 #define DBG_LEVEL DBG_LOG
@@ -280,7 +280,7 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
         length = strlen(TOPIC_PARAMETER_SET) + strlen(device_info_p->product_key) + strlen(device_info_p->device_name);
         topic_str_p = rt_calloc(length + 1, 1);
         if (!topic_str_p)
-        { 
+        {
             LOG_E("no memory for PARAMETER_SET buffer!");
             rc = -RT_ENOMEM;
             goto _exit;

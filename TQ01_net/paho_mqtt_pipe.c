@@ -702,7 +702,7 @@ static int deliverMessage(MQTTClient *c, MQTTString *topicName, MQTTMessage *mes
     for (i = 0; i < MAX_MESSAGE_HANDLERS; ++i)
     {
         if (c->messagesubHandlers[i].topicFilter != 0 && (MQTTPacket_equals(topicName, (char *)c->messagesubHandlers[i].topicFilter) ||
-                                                       isTopicMatched((char *)c->messagesubHandlers[i].topicFilter, topicName)))
+                                                          isTopicMatched((char *)c->messagesubHandlers[i].topicFilter, topicName)))
         {
             if (c->messagesubHandlers[i].callback != NULL)
             {
@@ -875,7 +875,7 @@ _mqtt_start:
         if (topic == RT_NULL)
             continue;
         rc = MQTTSubscribe(c, topic, qos);
-        LOG_I("Subscribe #%d %s %s!", i, topic, (rc < 0) || (rc == 0x80) ? ("fail") : ("OK"));
+        LOG_D("Subscribe #%d %s %s!", i, topic, (rc < 0) || (rc == 0x80) ? ("fail") : ("OK"));
 
         if (rc != 0)
         {
