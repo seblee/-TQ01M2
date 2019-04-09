@@ -1155,6 +1155,8 @@ _net_disconnect:
               ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec, connect_count, connected_count, disconnect_count);
     }
     rt_thread_delay(RT_TICK_PER_SECOND * 5);
+    if (c->ota_flag)
+        goto _mqtt_exit;
     goto _mqtt_start;
 
 _mqtt_disconnect_exit:
