@@ -442,9 +442,7 @@ rt_err_t mqtt_setup_connect_info(iotx_conn_info_t *conn, iotx_device_info_t *dev
     rt_err_t rc = RT_EOK;
     char guider_sign[GUIDER_SIGN_LEN] = {0};
     char hmac_source[512] = {0};
-    HMAC_MD5ctx_stt HMAC_MD5ctx_st;
-    uint32_t error_status = HASH_SUCCESS;
-
+  
     if (device_info->flag != IOT_SID_FLAG)
     {
         LOG_E("device_info->flag:0x%04X", device_info->flag);
@@ -474,55 +472,6 @@ rt_err_t mqtt_setup_connect_info(iotx_conn_info_t *conn, iotx_device_info_t *dev
                 guider_sign);
     LOG_D("password:%s", conn->password);
 
-    HMAC_MD5ctx_st.mFlags = E_HASH_DEFAULT;
-    HMAC_MD5ctx_st.mTagSize = CRL_MD5_SIZE;
-    LOG_D("hmac_source:%s", hmac_source);
-    LOG_D("device_secret:%s", device_info->device_secret);
-    Crypto_DeInit();
-    HMAC_MD5ctx_st.pmKey = (const uint8_t *)(device_info->device_secret);
-    HMAC_MD5ctx_st.mKeySize = strlen(device_info->device_secret);
-    error_status = HMAC_MD5_Init(&HMAC_MD5ctx_st);
-    /* check for initialization errors */
-    if (error_status == HASH_SUCCESS)
-    {
-        /* Add data to be hashed */
-        error_status = HMAC_MD5_Append(&HMAC_MD5ctx_st,
-                                       (const uint8_t *)hmac_source,
-                                       strlen(hmac_source));
-
-        if (error_status == HASH_SUCCESS)
-        {
-            int32_t P_pOutputSize;
-            rt_memset(guider_sign, 0, GUIDER_SIGN_LEN);
-            /* retrieve */
-            error_status = HMAC_MD5_Finish(&HMAC_MD5ctx_st, (uint8_t *)guider_sign, &P_pOutputSize);
-            if (error_status == HASH_SUCCESS)
-            {
-                LOG_D("OutputSize:%d,password:%02x", P_pOutputSize, guider_sign[0]);
-                rt_kprintf("\r\npassword:");
-                for (int i = 0; i < P_pOutputSize; i++)
-                {
-                    rt_kprintf("%02x", guider_sign[i]);
-                }
-                rt_kprintf("\r\n");
-            }
-            else
-                LOG_E("HMAC_MD5_Append err:%d", error_status);
-        }
-        else
-            LOG_E("HMAC_MD5_Finish err:%d", error_status);
-    }
-    else
-        LOG_E("HMAC_MD5_Init err:%d", error_status);
-
-    // if (conn->style == IOT_WIFI_MODE)
-    //     rt_snprintf(conn->client_id, sizeof(conn->client_id),
-    //                 "%s"
-    //                 "|securemode=%d"
-    //                 ",signmethod=%s"
-    //                 "|",
-    //                 device_info->device_id, SECURE_TCP, MD5_METHOD);
-    // else if (conn->style == IOT_4G_MODE)
     rt_snprintf(conn->client_id, sizeof(conn->client_id),
                 "%s"
                 "|securemode=%d"

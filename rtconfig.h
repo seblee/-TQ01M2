@@ -16,9 +16,6 @@
 #define RT_USING_IDLE_HOOK
 #define RT_IDEL_HOOK_LIST_SIZE 4
 #define IDLE_THREAD_STACK_SIZE 1024
-// #define RT_DEBUG
-#define RT_DEBUG_COLOR
-#define RT_DEBUG_MEM_CONFIG
 
 /* Inter-Thread communication */
 
@@ -38,6 +35,7 @@
 /* Kernel Device Object */
 
 #define RT_USING_DEVICE
+#define RT_USING_DEVICE_OPS
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 512
 #define RT_CONSOLE_DEVICE_NAME "uart5"
@@ -132,6 +130,7 @@
 /* AT commands */
 
 #define RT_USING_AT
+#define AT_DEBUG
 #define AT_USING_CLIENT
 #define AT_CLIENT_NUM_MAX 1
 #define AT_USING_SOCKET
@@ -172,13 +171,15 @@
 
 #define PKG_USING_AT_DEVICE
 #define PKG_AT_INIT_BY_THREAD
-#define AT_DEVICE_ESP8266
 #define AT_DEVICE_SIM7600
+#define AT_DEVICE_ESP8266
 #define AT_DEVICE_SOCKETS_NUM 5
 #define AT_DEVICE_NAME "uart3"
 #define AT_DEVICE_RECV_BUFF_LEN 2048
 #define AT_DEVICE_WIFI_SSID "Cloudwater"
 #define AT_DEVICE_WIFI_PASSWORD "tqcd2018"
+#define AT_DEVICE_POWER_PIN 5
+#define AT_DEVICE_STATUS_PIN 40
 #define PKG_USING_AT_DEVICE_LATEST_VERSION
 #define PKG_AT_DEVICE_VER_NUM 0x99999
 
@@ -198,7 +199,6 @@
 #define MBEDTLS_AES_ROM_TABLES
 #define MBEDTLS_ECP_WINDOW_SIZE 2
 #define MBEDTLS_SSL_MAX_CONTENT_LEN 0x3000
-//#define MBEDTLS_CONFIG_FILE "tls_config.h"
 #define PKG_USING_MBEDTLS_V260
 
 /* language packages */
@@ -210,7 +210,7 @@
 /* system packages */
 
 #define PKG_USING_FAL
-#define FAL_DEBUG_CONFIG
+#define FAL_DEBUG 0
 #define FAL_PART_HAS_TABLE_CFG
 #define PKG_USING_FAL_LATEST_VERSION
 

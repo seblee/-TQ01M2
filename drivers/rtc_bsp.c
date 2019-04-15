@@ -110,6 +110,17 @@ int RTC_Configuration(void)
 
     return 0;
 }
+#ifdef RT_USING_DEVICE_OPS
+const static struct rt_device_ops rtc_ops = 
+{
+    RT_NULL, 
+    rt_rtc_open,
+    RT_NULL,
+    rt_rtc_read,
+    RT_NULL,
+    rt_rtc_control
+};
+#endif
 
 void drv_rtc_init(void)
 {
@@ -123,14 +134,21 @@ void drv_rtc_init(void)
         rt_kprintf("rtc configure fail...\r\n");
         return;
     }
-
-    /* register rtc device */
+    
+#ifdef RT_USING_DEVICE_OPS
+    rtc.ops          = &rtc_ops;
+#else
+  /* register rtc device */
     rtc.init = RT_NULL;
     rtc.open = rt_rtc_open;
     rtc.close = RT_NULL;
     rtc.read = rt_rtc_read;
     rtc.write = RT_NULL;
     rtc.control = rt_rtc_control;
+#endif
+    
+  
+   
 
     /* no private */
     rtc.user_data = RT_NULL;
