@@ -338,8 +338,7 @@ static int net_disconnect(MQTTClient *c)
     {
         int i = 0;
     _reclose:
-        if ((closesocket(c->sock) != 0) && (i++ < 5))
-            goto _reclose;
+        closesocket(c->sock);
     }
     c->sock = -1;
 #endif
@@ -430,7 +429,7 @@ static int net_read(MQTTClient *c, unsigned char *buf, int len, int timeout)
             fd_set readset;
             struct timeval interval;
 
-            LOG_D("net_read %d:%d, timeout:%d", rt_tick_get(), bytes, len, timeout);
+            LOG_D("net_read,bytes%d,len:%d,timeout:%d", bytes, len, timeout);
             timeout = 0;
 
             interval.tv_sec = 1;
@@ -443,7 +442,7 @@ static int net_read(MQTTClient *c, unsigned char *buf, int len, int timeout)
         }
         else
         {
-            LOG_D("net_read %d:%d, break!", rt_tick_get(), bytes, len);
+            LOG_D("net_read,bytes%d,len:%d,timeout:%d", bytes, len, timeout);
             break;
         }
     }
@@ -520,6 +519,8 @@ static int MQTTConnect(MQTTClient *c)
         LOG_E("[%d]%s c-> is not connected", rt_tick_get(), __FUNCTION__);
         goto _exit;
     }
+    LOG_I("c->sock=%d", c->sock);
+
     LOG_I("[%d]%s username:%s,password:%s", rt_tick_get(), __FUNCTION__, options->username.cstring, options->password.cstring);
 
     c->keepAliveInterval = options->keepAliveInterval;
@@ -555,30 +556,31 @@ static int MQTTConnect(MQTTClient *c)
             rc = -1;
             goto _exit;
         }
-    }
+        LOG_E("[%d]%s wait resp ok, res:%d errno:%d", rt_tick_get(), __FUNCTION__, res, errno);
 
-    rc = MQTTPacket_readPacket(c);
-    if (rc < 0)
-    {
-        LOG_E("[%d]%s MQTTPacket_readPacket fail", rt_tick_get(), __FUNCTION__);
-        goto _exit;
-    }
-
-    if (rc == CONNACK)
-    {
-        unsigned char sessionPresent, connack_rc;
-
-        if (MQTTDeserialize_connack(&sessionPresent, &connack_rc, c->readbuf, c->readbuf_size) == 1)
+        rc = MQTTPacket_readPacket(c);
+        if (rc < 0)
         {
-            rc = connack_rc;
+            LOG_E("[%d]%s MQTTPacket_readPacket fail", rt_tick_get(), __FUNCTION__);
+            goto _exit;
+        }
+
+        if (rc == CONNACK)
+        {
+            unsigned char sessionPresent, connack_rc;
+
+            if (MQTTDeserialize_connack(&sessionPresent, &connack_rc, c->readbuf, c->readbuf_size) == 1)
+            {
+                rc = connack_rc;
+            }
+            else
+            {
+                rc = -1;
+            }
         }
         else
-        {
             rc = -1;
-        }
     }
-    else
-        rc = -1;
 
 _exit:
     if (rc == 0)
@@ -730,8 +732,7 @@ static int MQTT_cycle(MQTTClient *c)
     // read the socket, see what work is due
     int packet_type = MQTTPacket_readPacket(c);
 
-    int len = 0,
-        rc = PAHO_SUCCESS;
+    int len = 0, rc = PAHO_SUCCESS;
 
     if (packet_type == -1)
     {
@@ -827,7 +828,6 @@ static void paho_mqtt_thread(void *param)
 {
     MQTTClient *c = (MQTTClient *)param;
     int i, rc, len = 0;
-    rt_uint32_t connect_count = 0, connected_count = 0, disconnect_count = 0;
     rt_uint32_t total, used, max_used;
 
     /* create publish pipe. */
@@ -836,6 +836,7 @@ static void paho_mqtt_thread(void *param)
         LOG_E("creat pipe err=%d", rt_get_errno());
         goto _mqtt_exit;
     }
+    LOG_I("c->pub_pipe[0]=%d", c->pub_pipe[0]);
 
 _mqtt_start:
     if ((module_state(RT_NULL) != MODULE_4G_READY) &&
@@ -845,7 +846,6 @@ _mqtt_start:
         rt_thread_delay(rt_tick_from_millisecond(5000));
         goto _net_disconnect;
     }
-    connect_count++;
     if (c->connect_callback)
     {
         c->connect_callback(c);
@@ -857,7 +857,6 @@ _mqtt_start:
         LOG_E("[%d]Net connect error(%d)", rt_tick_get(), rc);
         goto _mqtt_restart;
     }
-    connected_count++;
     rc = MQTTConnect(c);
     if (rc != 0)
     {
@@ -977,7 +976,7 @@ _mqtt_start:
         /* int select(maxfdp1, readset, writeset, exceptset, timeout); */
         res = select(((c->pub_pipe[0] > c->sock) ? c->pub_pipe[0] : c->sock) + 1,
                      &readset, RT_NULL, RT_NULL, &timeout);
-
+        LOG_E("[%d]select res: %d", rt_tick_get(), res);
         if (res == 0)
         {
             len = 0;
@@ -1045,6 +1044,7 @@ _mqtt_start:
                     LOG_E("[%d]wait publish Response res: %d", rt_tick_get(), res);
                     goto _mqtt_disconnect;
                 }
+                LOG_I("[%d]wait publish Response res: %d", rt_tick_get(), res);
             }
             if (sendState == SENDINFORM)
                 c->isInformed = 1;
@@ -1079,13 +1079,11 @@ _mqtt_start:
 
                 if (strcmp((const char *)c->readbuf, "DISCONNECT") == 0)
                 {
-                    disconnect_count++;
                     LOG_D("DISCONNECT");
                     goto _mqtt_disconnect_exit;
                 }
                 if (strcmp((const char *)c->readbuf, "RECONNECT") == 0)
                 {
-                    disconnect_count++;
                     LOG_D("RECONNECT");
                     goto _mqtt_disconnect;
                 }
@@ -1151,8 +1149,8 @@ _net_disconnect:
         LOG_I("total:%d,used:%d,max_used:%d", total, used, max_used);
         struct tm ti;
         current_systime_get(&ti);
-        LOG_I("%04d-%02d-%02d %02d:%02d:%02d connect:%d connected:%d disconnect:%d",
-              ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec, connect_count, connected_count, disconnect_count);
+        LOG_I("%04d-%02d-%02d %02d:%02d:%02d",
+              ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec);
     }
     rt_thread_delay(RT_TICK_PER_SECOND * 5);
     if (c->ota_flag)
