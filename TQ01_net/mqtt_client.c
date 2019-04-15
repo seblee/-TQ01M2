@@ -93,11 +93,11 @@ static void mqtt_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
 {
     app_struct_t app_info = RT_NULL;
     *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
-    LOG_D("mqtt sub callback: %.*s %.*s",
-          msg_data->topicName->lenstring.len,
-          msg_data->topicName->lenstring.data,
-          msg_data->message->payloadlen,
-          (char *)msg_data->message->payload);
+    // LOG_D("mqtt sub callback: %.*s %.*s",
+    //       msg_data->topicName->lenstring.len,
+    //       msg_data->topicName->lenstring.data,
+    //       msg_data->message->payloadlen,
+    //       (char *)msg_data->message->payload);
     if (network_upgrade_parse((const char *)msg_data->message->payload, &app_info) == RT_EOK)
     {
         if ((c->ota_flag == 0) && (app_info != RT_NULL))
@@ -113,11 +113,11 @@ static void mqtt_BROADCAST_callback(MQTTClient *c, MessageData *msg_data)
 {
     app_struct_t app_info = RT_NULL;
     *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
-    LOG_D("mqtt sub callback: %.*s %.*s",
-          msg_data->topicName->lenstring.len,
-          msg_data->topicName->lenstring.data,
-          msg_data->message->payloadlen,
-          (char *)msg_data->message->payload);
+    // LOG_D("mqtt sub callback: %.*s %.*s",
+    //       msg_data->topicName->lenstring.len,
+    //       msg_data->topicName->lenstring.data,
+    //       msg_data->message->payloadlen,
+    //       (char *)msg_data->message->payload);
     if (network_broadcast_parse((const char *)msg_data->message->payload, &app_info) == RT_EOK)
     {
         if ((c->ota_flag == 0) && (app_info != RT_NULL))
@@ -442,7 +442,7 @@ rt_err_t mqtt_setup_connect_info(iotx_conn_info_t *conn, iotx_device_info_t *dev
     rt_err_t rc = RT_EOK;
     char guider_sign[GUIDER_SIGN_LEN] = {0};
     char hmac_source[512] = {0};
-  
+
     if (device_info->flag != IOT_SID_FLAG)
     {
         LOG_E("device_info->flag:0x%04X", device_info->flag);

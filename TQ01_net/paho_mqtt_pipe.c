@@ -336,8 +336,6 @@ static int net_disconnect(MQTTClient *c)
 #else
     if (c->sock >= 0)
     {
-        int i = 0;
-    _reclose:
         closesocket(c->sock);
     }
     c->sock = -1;

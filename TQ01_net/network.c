@@ -668,7 +668,7 @@ rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
 {
     rt_err_t rc;
     cJSON *root = RT_NULL;
-    LOG_D("[%d] Str:%s", rt_tick_get(), Str);
+    // LOG_D("[%d] Str:%s", rt_tick_get(), Str);
     root = cJSON_Parse(Str);
     if (!root)
     {
@@ -786,7 +786,7 @@ rt_err_t network_broadcast_parse(const char *Str, app_struct **app_info)
     rt_err_t rc;
     int MCode_value;
     cJSON *root = RT_NULL;
-    LOG_D("[%d] Str:%s", rt_tick_get(), Str);
+    // LOG_D("[%d] Str:%s", rt_tick_get(), Str);
     root = cJSON_Parse(Str);
     if (!root)
     {
