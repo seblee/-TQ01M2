@@ -17,7 +17,7 @@
 #include "network.h"
 #include "mqtt_client.h"
 #include "disguise_time.h"
-
+#include <rtdevice.h>
 #include "cJSON.h"
 #include "utils_md5.h"
 
@@ -93,6 +93,8 @@ void NetWork_DIR_Init(void)
     //Configure I2C1 pins: SCL
     GPIO_InitStructure.GPIO_Pin = TQ01E1_DIR_PIN;
     GPIO_Init(TQ01E1_DIR_PORT, &GPIO_InitStructure);
+    rt_pin_mode(AT_DEVICE_RESET_PIN, PIN_MODE_OUTPUT);
+    rt_pin_write(AT_DEVICE_RESET_PIN, PIN_HIGH);
     DIR_8266();
 }
 

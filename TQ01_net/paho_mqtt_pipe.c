@@ -554,12 +554,11 @@ static int MQTTConnect(MQTTClient *c)
             rc = -1;
             goto _exit;
         }
-        LOG_E("[%d]%s wait resp ok, res:%d errno:%d", rt_tick_get(), __FUNCTION__, res, errno);
-
+       
         rc = MQTTPacket_readPacket(c);
         if (rc < 0)
         {
-            LOG_E("[%d]%s MQTTPacket_readPacket fail", rt_tick_get(), __FUNCTION__);
+            LOG_E("[%d]%s MQTTPacket_readPacket fail", rt_tick_get(), __FUNCTION__); 
             goto _exit;
         }
 
@@ -974,7 +973,6 @@ _mqtt_start:
         /* int select(maxfdp1, readset, writeset, exceptset, timeout); */
         res = select(((c->pub_pipe[0] > c->sock) ? c->pub_pipe[0] : c->sock) + 1,
                      &readset, RT_NULL, RT_NULL, &timeout);
-        LOG_E("[%d]select res: %d", rt_tick_get(), res);
         if (res == 0)
         {
             len = 0;
@@ -1042,7 +1040,6 @@ _mqtt_start:
                     LOG_E("[%d]wait publish Response res: %d", rt_tick_get(), res);
                     goto _mqtt_disconnect;
                 }
-                LOG_I("[%d]wait publish Response res: %d", rt_tick_get(), res);
             }
             if (sendState == SENDINFORM)
                 c->isInformed = 1;
