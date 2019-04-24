@@ -20,7 +20,7 @@
 #include <rtdevice.h>
 #include "cJSON.h"
 #include "utils_md5.h"
-
+#include "sys_status.h"
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
@@ -983,4 +983,54 @@ rt_err_t Conversion_modbus_2_ram(rt_uint8_t *dst, rt_uint8_t *src, rt_uint16_t l
         *(dst + 2 * i + 1) = *(src + 2 * i);
     }
     return 0;
+}
+
+int ota_check_start(void)
+{
+    do
+    {
+        if (g_sys.config.ComPara.OTA_operate & 3)
+        {
+            if (g_sys.config.ComPara.OTA_operate & 4)
+            {
+                ota_write_operate_flag(g_sys.config.ComPara.OTA_operate & (~4));
+                return 0;
+            }
+            return 1;
+        }
+        rt_thread_delay(rt_tick_from_millisecond(1000));
+    } while (1);
+}
+int ota_done_cb(int is_sucess)
+{
+    rt_err_t err = RT_EOK;
+    rt_uint16_t flag;
+    if (is_sucess)
+    {
+        flag = g_sys.config.ComPara.OTA_operate & 1;
+    }
+    else
+    {
+        flag = g_sys.config.ComPara.OTA_operate;
+        flag &= ~2;
+        flag |= 4;
+    }
+    err = ota_write_operate_flag(flag);
+    return err;
+}
+
+rt_err_t ota_write_operate_flag(rt_uint16_t flag)
+{
+    rt_err_t err = RT_EOK;
+    rt_uint8_t temp[2];
+    temp[0] = (rt_uint8_t)(flag >> 8);
+    temp[1] = (rt_uint8_t)(flag & 0xff);
+    err = cpad_eMBRegHoldingCB(temp, 341, 1, CPAD_MB_REG_MULTIPLE_WRITE);
+    return -err;
+}
+void ota_restart(void)
+{
+    if (sys_get_remap_status(WORK_MODE_STS_REG_NO, COOLING_STS_BPOS))
+        rt_thread_delay(rt_tick_from_millisecond(180 * RT_TICK_PER_SECOND));
+    rt_hw_cpu_reset();
 }

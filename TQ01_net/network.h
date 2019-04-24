@@ -165,6 +165,12 @@ rt_err_t network_register_parse(const char *Str, iotx_device_info_t *device_info
 rt_err_t network_Conversion_wifi_parpmeter(Net_Conf_st *src, Net_Conf_st *dst);
 
 rt_err_t Conversion_modbus_2_ram(rt_uint8_t *dst, rt_uint8_t *src, rt_uint16_t len);
+
+rt_err_t write_ota_operate_flag(rt_uint16_t flag);
+rt_err_t ota_write_operate_flag(rt_uint16_t flag);
+int ota_check_start(void);
+int ota_done_cb(int is_sucess);
+void ota_restart(void);
 /*----------------------------------------------------------------------------*/
 
 #endif

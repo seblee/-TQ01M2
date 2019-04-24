@@ -102,7 +102,6 @@ static void mqtt_UPGRADE_callback(MQTTClient *c, MessageData *msg_data)
     {
         if ((c->ota_flag == 0) && (app_info != RT_NULL))
         {
-            mqtt_send_cmd("DISCONNECT");
             c->ota_flag = 1;
             ota_start(app_info);
         }
@@ -122,7 +121,6 @@ static void mqtt_BROADCAST_callback(MQTTClient *c, MessageData *msg_data)
     {
         if ((c->ota_flag == 0) && (app_info != RT_NULL))
         {
-            mqtt_send_cmd("DISCONNECT");
             c->ota_flag = 1;
             ota_start(app_info);
         }

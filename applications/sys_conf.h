@@ -31,8 +31,8 @@ enum
 
     DO_EL2_BPOS,      //电子锁2
     DO_RSV3_BPOS,     //预留
-    DO_RSV4_BPOS,
-    DO_RSV5_BPOS,
+    DO_RSV4_BPOS,     //预留
+    DO_RSV5_BPOS,     //预留
     DO_LED_LOCK_BPOS, //童锁LED DC5V
     DO_PWR_CTRL_BPOS, //12V电源控制,低电平有效
     DO_RSV_BPOS_0,    //预留
@@ -700,7 +700,7 @@ typedef struct
     uint16_t u16ColdWater_StopTemp;    //制冰水停止温度
     uint16_t u16HeatFan_StartTemp;     //热风机启动温度
     uint16_t u16HeatFan_StopTemp;      //热风机停止温度
-    uint16_t u16Null;                  //null
+    uint16_t OTA_operate;              //bit0:autoupdate enable,bit1:startupdate bit2:OTA Faild
     uint16_t device_info[100];         //三元组信息
 } ComPara_Conf_st;
 

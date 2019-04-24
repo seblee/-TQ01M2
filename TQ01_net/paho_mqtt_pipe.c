@@ -554,11 +554,11 @@ static int MQTTConnect(MQTTClient *c)
             rc = -1;
             goto _exit;
         }
-       
+
         rc = MQTTPacket_readPacket(c);
         if (rc < 0)
         {
-            LOG_E("[%d]%s MQTTPacket_readPacket fail", rt_tick_get(), __FUNCTION__); 
+            LOG_E("[%d]%s MQTTPacket_readPacket fail", rt_tick_get(), __FUNCTION__);
             goto _exit;
         }
 
