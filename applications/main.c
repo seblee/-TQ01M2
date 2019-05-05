@@ -74,7 +74,7 @@ int main(void)
 
     rt_thread_t CPAD_slave_thread;
     CPAD_slave_thread = rt_thread_create("CPAD_slave", cpad_modbus_slave_thread_entry, RT_NULL,
-                                         2048, CPAD_THREAD_PRIO, 5);
+                                         0x900, CPAD_THREAD_PRIO, 5);
     RT_ASSERT(CPAD_slave_thread != RT_NULL);
     if (CPAD_slave_thread != RT_NULL)
         rt_thread_startup(CPAD_slave_thread);

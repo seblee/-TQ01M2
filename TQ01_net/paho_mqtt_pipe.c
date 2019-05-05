@@ -991,11 +991,11 @@ _mqtt_start:
             } /* res == 0: timeount for ping. */
             // break;
             case SENDEDINIT:
-            {
-                sendState++;
-                c->isQRcodegeted = 1;
-                continue;
-            }
+            // {
+            //     sendState++;
+            //     c->isQRcodegeted = 1;
+            //     continue;
+            // }
             case SENDINIT:
                 len = mq_client_publish(c, PLATFORM_INIT);
                 break;

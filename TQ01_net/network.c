@@ -1025,7 +1025,7 @@ rt_err_t ota_write_operate_flag(rt_uint16_t flag)
     rt_uint8_t temp[2];
     temp[0] = (rt_uint8_t)(flag >> 8);
     temp[1] = (rt_uint8_t)(flag & 0xff);
-    err = cpad_eMBRegHoldingCB(temp, 341, 1, CPAD_MB_REG_MULTIPLE_WRITE);
+    err = cpad_eMBRegHoldingCB(temp, 376, 1, CPAD_MB_REG_MULTIPLE_WRITE);
     return -err;
 }
 void ota_restart(void)
