@@ -123,11 +123,10 @@ void net_thread_entry(void *parameter)
     }
     /* config MQTT context param */
 
+    module_thread_start(&g_sys.config.ComPara.Net_Conf);
     result = mqtt_client_init(&client, &device_info);
-
     if (result != RT_EOK)
         goto _exit;
-    module_thread_start(&g_sys.config.ComPara.Net_Conf);
     paho_mqtt_start(&client);
     is_started = 1;
 _exit:
