@@ -223,7 +223,7 @@ void ai_sts_update(sys_reg_st *gds_sys_ptr)
         gds_sys_ptr->status.ComSta.u16Ain[AI_SENSOR1] = Calc_UV_ai(u16ADCRemapValue[AI_SENSOR1], K_FACTOR_UV, gds_sys_ptr->config.general.ai_cali[AI_SENSOR1]);
     }
 
-    // rt_kprintf("ain[0] = %d,ain[1] = %d,ain[2] = %d,ain[3] = %d,ain[4] = %d\n", gds_sys_ptr->status.ComSta.u16Ain[0], gds_sys_ptr->status.ComSta.u16Ain[1], gds_sys_ptr->status.ComSta.u16Ain[2], gds_sys_ptr->status.ComSta.u16Ain[3], gds_sys_ptr->status.ComSta.u16Ain[4]);
+    // rt_kprintf("Sensor:%d,NTC1:%d,NTC2:%d,NTC3:%d,NTC4:%d,NTC5:%d,NTC6:%d\n", gds_sys_ptr->status.ComSta.u16Ain[0], gds_sys_ptr->status.ComSta.u16Ain[1], gds_sys_ptr->status.ComSta.u16Ain[2], gds_sys_ptr->status.ComSta.u16Ain[3], gds_sys_ptr->status.ComSta.u16Ain[4], gds_sys_ptr->status.ComSta.u16Ain[5], gds_sys_ptr->status.ComSta.u16Ain[6]);
 
     return;
 }

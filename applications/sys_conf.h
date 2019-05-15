@@ -91,6 +91,8 @@ enum
     AI_NTC2,
     AI_NTC3,
     AI_NTC4,
+    AI_NTC5,
+    AI_NTC6,
     AI_MAX_CNT = 7,
 };
 #define AI_SENSOR_ERR AI_MAX_CNT + 1 //传感器故障

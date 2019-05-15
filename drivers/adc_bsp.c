@@ -39,13 +39,15 @@ void DMA_GPIO_config()
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; //不带上拉下拉
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 |
                                   GPIO_Pin_2 | GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;     //模拟输入
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; //不带上拉下拉
-    GPIO_Init(GPIOC, &GPIO_InitStructure);           //初始化
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
+    GPIO_Init(GPIOC, &GPIO_InitStructure); //初始化
 }
 void DMA_ADC_config()
 {
