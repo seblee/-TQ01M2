@@ -510,10 +510,8 @@ const sts_reg_map_st status_reg_map_inst[STATUS_REG_MAP_NUM] = {
     {16, &g_sys.status.ComSta.u16Din_bitmap[1], 0},
     {17, &g_sys.status.ComSta.u16Dout_bitmap[1], 0},
     {18, &g_sys.status.ComSta.u16Ain[AI_NTC4], 0},
-    // {18, &g_sys.status.ComSta.REQ_TEST[0], 0},
     {19, &g_sys.status.ComSta.u16AO[0], 0},
     {20, &g_sys.status.ComSta.u16Runtime[1][DO_FILLTER_DUMMY_BPOS], 0},
-    // {20, &g_sys.status.ComSta.REQ_TEST[1], 0},
     {21, &g_sys.status.ComSta.u16Runtime[1][DO_FILLTER_ELEMENT_DUMMY_BPOS_0], 0},
     {22, &g_sys.status.ComSta.u16Runtime[1][DO_FAN_BPOS], 0},
     {23, &g_sys.status.ComSta.u16Runtime[1][DO_COMP1_BPOS], 0},
@@ -523,7 +521,7 @@ const sts_reg_map_st status_reg_map_inst[STATUS_REG_MAP_NUM] = {
     {27, &g_sys.status.ComSta.u16Runtime[1][DO_FILLTER_ELEMENT_DUMMY_BPOS_3], 0},
     {28, &g_sys.status.ComSta.u16Runtime[1][DO_FILLTER_ELEMENT_DUMMY_BPOS_4], 0},
     {29, &g_sys.status.ComSta.u16Runtime[1][DO_UV1_BPOS], 0},
-    {30, &g_sys.status.ComSta.u16PM25, 0},
+    {30, &g_sys.status.ComSta.u16Runtime[1][DO_UV2_BPOS], 0},
     {31, &g_sys.status.ComSta.REQ_TEST[0], 0},
     {32, &g_sys.status.ComSta.REQ_TEST[1], 0},
     {33, &g_sys.status.ComSta.u16Ain[AI_NTC5], 0},
@@ -531,8 +529,8 @@ const sts_reg_map_st status_reg_map_inst[STATUS_REG_MAP_NUM] = {
     {35, &g_sys.status.ComSta.u16WL, 0},
     {36, &g_sys.status.ComSta.u16Status_remap[1], 0},
     {37, &g_sys.status.ComSta.u16Cur_Water, 0},
-    {38, NULL, 0},
-    {39, NULL, 0},
+    {38, &g_sys.status.ComSta.net_status, 0},
+    {39, &g_sys.status.ComSta.u16PM25, 0},
 };
 
 /**
@@ -543,7 +541,8 @@ const sts_reg_map_st status_reg_map_inst[STATUS_REG_MAP_NUM] = {
 		`EE_FLAG_EMPTY:	eeprom empty
   */
 
-static init_state_em get_ee_status(void)
+static init_state_em
+get_ee_status(void)
 {
     init_state_em em_init_state;
     uint8_t ee_pflag;
