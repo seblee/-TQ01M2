@@ -541,8 +541,7 @@ const sts_reg_map_st status_reg_map_inst[STATUS_REG_MAP_NUM] = {
 		`EE_FLAG_EMPTY:	eeprom empty
   */
 
-static init_state_em
-get_ee_status(void)
+static init_state_em get_ee_status(void)
 {
     init_state_em em_init_state;
     uint8_t ee_pflag;

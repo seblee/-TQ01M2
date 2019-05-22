@@ -1,6 +1,6 @@
 #include <rtthread.h>
 #include "sys_conf.h"
-#include "team.h" 
+#include "team.h"
 
 // void team_thread_entry(void *parameter)
 // {

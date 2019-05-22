@@ -1,5 +1,5 @@
 #include <rtthread.h>
-#include "sys_conf.h"  
+#include "sys_conf.h"
 #include "kits/fifo.h"
 #include "cpad_bsp.h"
 

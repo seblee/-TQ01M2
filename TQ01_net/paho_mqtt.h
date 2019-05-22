@@ -96,7 +96,7 @@ struct MQTTClient
         char *topicFilter;
         void (*callback)(MQTTClient *, MessageData *);
         enum QoS qos;
-    } messagesubHandlers[MAX_MESSAGE_HANDLERS];
+    } messagesubHandlers[MAX_MESSAGE_HANDLERS]; /* Message handlers are indexed by subscription topic */
 
     void (*defaultMessageHandler)(MQTTClient *, MessageData *);
 

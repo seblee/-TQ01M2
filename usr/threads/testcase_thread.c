@@ -4,7 +4,7 @@
 #include "calc.h"
 #include "adc_bsp.h"
 #include "i2c_bsp.h"
-#include <rtdevice.h> 
+#include <rtdevice.h>
 #include "cpad_bsp.h"
 #include "led_bsp.h"
 #include "dio_bsp.h"

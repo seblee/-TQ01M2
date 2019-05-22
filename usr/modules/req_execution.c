@@ -1270,7 +1270,7 @@ void WaterOut_req_exe(void)
                             g_sys.status.ComSta.TEST = 0;
                         }
                     }
-                    else 
+                    else
                     {
                         if (u8HeatNum < WRITEHEAT_MAX) //
                         {
