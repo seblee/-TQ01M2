@@ -10,6 +10,7 @@
       <TargetName>rt-thread_stm32f4xx</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>5060750::V5.06 update 6 (build 750)::ARMCC</pArmCC>
       <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
@@ -138,7 +139,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -1173,14 +1174,14 @@
           <GroupName>ota_downloader</GroupName>
           <Files>
             <File>
-              <FileName>http_ota.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\packages\ota_downloader-latest\src\http_ota.c</FilePath>
-            </File>
-            <File>
               <FileName>ota.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\packages\ota_downloader-latest\src\ota.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_ota.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\packages\ota_downloader-latest\src\http_ota.c</FilePath>
             </File>
           </Files>
         </Group>

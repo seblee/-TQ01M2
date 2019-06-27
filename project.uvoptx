@@ -159,7 +159,7 @@
           <Type>0</Type>
           <LineNumber>1091</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134333244</Address>
+          <Address>134333248</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -175,7 +175,7 @@
           <Type>0</Type>
           <LineNumber>1080</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134333194</Address>
+          <Address>134333198</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -191,7 +191,7 @@
           <Type>0</Type>
           <LineNumber>188</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134334874</Address>
+          <Address>134334876</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -207,7 +207,7 @@
           <Type>0</Type>
           <LineNumber>192</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134334876</Address>
+          <Address>134334878</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -512,7 +512,7 @@
 
   <Group>
     <GroupName>Drivers</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1116,7 +1116,7 @@
 
   <Group>
     <GroupName>at_device</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -2144,7 +2144,7 @@
 
   <Group>
     <GroupName>ota_downloader</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -2155,8 +2155,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\packages\ota_downloader-latest\src\http_ota.c</PathWithFileName>
-      <FilenameWithoutPath>http_ota.c</FilenameWithoutPath>
+      <PathWithFileName>.\packages\ota_downloader-latest\src\ota.c</PathWithFileName>
+      <FilenameWithoutPath>ota.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2167,8 +2167,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\packages\ota_downloader-latest\src\ota.c</PathWithFileName>
-      <FilenameWithoutPath>ota.c</FilenameWithoutPath>
+      <PathWithFileName>.\packages\ota_downloader-latest\src\http_ota.c</PathWithFileName>
+      <FilenameWithoutPath>http_ota.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
