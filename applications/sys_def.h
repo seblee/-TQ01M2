@@ -33,8 +33,8 @@ typedef uint32_t time_t;
 #ifdef SYS_HMI_TQ
 #define CONF_REG_MAP_NUM 435
 #define CONF_REG_SID_NUM 100
-#define CONF_REG_SID_START CONF_REG_MAP_NUM-CONF_REG_SID_NUM
-#define SOFTWARE_VER 0x1080
+#define CONF_REG_SID_START CONF_REG_MAP_NUM - CONF_REG_SID_NUM
+#define SOFTWARE_VER 0x1080 //0xf000 0x0f80 0x007f
 #define SOFTWARE_VER_NAME "TQ01M2"
 
 #elif SYS_HMI_TQ_T10
@@ -48,7 +48,7 @@ typedef uint32_t time_t;
 #define SOFTWARE_VER 0x110C
 #endif
 
-#define STATUS_REG_MAP_NUM 40
+#define STATUS_REG_MAP_NUM 42
 #define HARDWARE_VER 0x1000
 #define SERIAL_NO_3 0
 #define SERIAL_NO_2 0

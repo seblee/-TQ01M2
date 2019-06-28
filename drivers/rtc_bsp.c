@@ -138,7 +138,7 @@ void drv_rtc_init(void)
 #ifdef RT_USING_DEVICE_OPS
     rtc.ops          = &rtc_ops;
 #else
-  /* register rtc device */
+    /* register rtc device */
     rtc.init = RT_NULL;
     rtc.open = rt_rtc_open;
     rtc.close = RT_NULL;
