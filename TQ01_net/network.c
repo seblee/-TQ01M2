@@ -86,16 +86,16 @@ void NetWork_DIR_Init(void)
     RCC_AHB1PeriphClockCmd(TQ01E1_PORT_RCC, ENABLE);
 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
 
-    //Configure I2C1 pins: SCL
     GPIO_InitStructure.GPIO_Pin = TQ01E1_DIR_PIN;
     GPIO_Init(TQ01E1_DIR_PORT, &GPIO_InitStructure);
-    rt_pin_mode(AT_DEVICE_RESET_PIN, PIN_MODE_OUTPUT);
-    rt_pin_write(AT_DEVICE_RESET_PIN, PIN_HIGH);
     DIR_8266();
+    rt_pin_mode(AT_DEVICE_RESET_PIN, PIN_MODE_OUTPUT);
+
+    SIM7600_SET();
 }
 
 int module_thread_start(void *parameter);
