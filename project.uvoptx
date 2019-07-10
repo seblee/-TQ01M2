@@ -2304,7 +2304,7 @@
 
   <Group>
     <GroupName>WebClinet</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -2324,7 +2324,7 @@
       <GroupNumber>11</GroupNumber>
       <FileNumber>164</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>.\packages\webclient-v2.0.1\src\webclient_file.c</PathWithFileName>
