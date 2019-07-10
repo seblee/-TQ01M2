@@ -3,7 +3,7 @@
 #include "calc.h"
 #include "sys_conf.h"
 #include "local_status.h"
-#include "req_execution.h" 
+#include "req_execution.h"
 #include "sys_status.h"
 #include "dio_bsp.h"
 #include "rtc_bsp.h"
@@ -958,7 +958,7 @@ void Sys_Fan_CP_WL(void)
         u8FCP_Start = 0;
         Test |= 0x2000;
     }
-    g_sys.status.ComSta.REQ_TEST[0] = Test;
+    g_sys.status.ComSta.REQ_TEST[2] = Test;
 
     //		rt_kprintf("u16WL=%x,Test=%x,TH_Check_Interval=%d,din_bitmap[0]=%x,Fan_Close=%x,Comp_Close[0]=%x\n",u16WL,Test,l_sys.TH_Check_Interval,g_sys.status.ComSta.u16Din_bitmap[0],l_sys.Fan_Close,l_sys.Comp_Close[0]);
 
