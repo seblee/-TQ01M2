@@ -82,9 +82,9 @@ const conf_reg_map_st conf_reg_map_inst[CONF_REG_MAP_NUM] = {
     {34, NULL, 0, 3600, 0, 0, 1, NULL},
     {35, &g_sys.config.ComPara.u16M_Type, 0, 100, 0, 2, 1, NULL},
     {36, &g_sys.config.ComPara.u16Power_Mode, 0, 1, 1, 2, 1, NULL},
-    {37, &g_sys.config.ComPara.u16Start_Temp, 0, 800, 150, 2, 1, NULL},
+    {37, &g_sys.config.ComPara.u16Start_Temp[0], 0, 800, 150, 2, 1, NULL},
     {38, &g_sys.config.ComPara.u16Start_Humidity, 0, 999, 350, 2, 1, NULL},
-    {39, &g_sys.config.ComPara.u16Stop_Temp, 0, 800, 100, 2, 1, NULL},
+    {39, &g_sys.config.ComPara.u16Stop_Temp[0], 0, 800, 100, 2, 1, NULL},
     {40, &g_sys.config.ComPara.u16Stop_Humidity, 0, 999, 300, 2, 1, NULL},
     {41, &g_sys.config.ComPara.u16Start_Defrost_Temp, 0, 0xFFFF, (uint16_t)-30, 2, 1, NULL},
     {42, &g_sys.config.ComPara.u16Stop_Defrost_Temp, 0, 0xFFFF, 60, 2, 1, NULL},
@@ -100,7 +100,7 @@ const conf_reg_map_st conf_reg_map_inst[CONF_REG_MAP_NUM] = {
     {52, &g_sys.config.ComPara.u16Sterilize_Mode, 0, 0x03, 0x03, 2, 1, NULL},
     {53, &g_sys.config.ComPara.u16Sterilize_Time[1], 1, 600, 15, 2, 1, NULL},
     {54, &g_sys.config.ComPara.u16Sterilize_Interval[1], 1, 10000, 60, 2, 1, NULL},
-    {55, NULL, 0, 3600, 0, 0, 1, NULL},
+    {55, &g_sys.config.ComPara.u16UV_Delay, 0, 1000, 5, 2, 1, NULL},
     {FACTORY_RESET, &g_sys.config.ComPara.u16Reset, 0, 0xFF, 0, 2, 1, NULL},
     {57, &g_sys.config.ComPara.u16Test_Mode_Type, 0, 0xFF, 0, 2, 1, NULL},       //121
     {MANUAL_TSET, &g_sys.config.ComPara.u16Manual_Test_En, 0, 2, 0, 2, 1, NULL}, //122
@@ -142,8 +142,8 @@ const conf_reg_map_st conf_reg_map_inst[CONF_REG_MAP_NUM] = {
     {94, &g_sys.config.alarm[ACL_FILTER_ELEMENT_3_OT].alarm_param, 1, 65535, 2500, 2, 1, NULL},
     {95, &g_sys.config.alarm[ACL_FILTER_ELEMENT_4_OT].alarm_param, 1, 65535, 2500, 2, 1, NULL},
     {96, &g_sys.config.alarm[ACL_UV1_OT].alarm_param, 1, 65535, 30000, 2, 1, NULL},
-    {97, NULL, 0, 3600, 0, 2, 1, NULL},
-    {98, NULL, 0, 3600, 0, 2, 1, NULL},
+    {97, &g_sys.config.ComPara.u16Start_Temp[1], 0, 800, 380, 2, 1, NULL},
+    {98, &g_sys.config.ComPara.u16Stop_Temp[1], 0, 800, 400, 2, 1, NULL},
     {99, &g_sys.config.ComPara.u16TestEV[0], 0, 65535, 5, 2, 1, NULL},
     {100, &g_sys.config.ComPara.u16TestEV[1], 0, 65535, 5, 2, 1, NULL},
     {101, &g_sys.config.Platform.Fixed_Report, 10, 1000, 60, 2, 1, NULL},
@@ -1538,5 +1538,3 @@ FINSH_FUNCTION_EXPORT(write_reg_map, write data into conf registers.);
 FINSH_FUNCTION_EXPORT(set_load_flag, set sys init load option.);
 FINSH_FUNCTION_EXPORT(save_conf_reg, save current conf reg data.);
 FINSH_FUNCTION_EXPORT(read_eeprom, read eeprom content eeprom flag.);
-
-

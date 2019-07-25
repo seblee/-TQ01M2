@@ -986,6 +986,7 @@ rt_err_t Conversion_modbus_2_ram(rt_uint8_t *dst, rt_uint8_t *src, rt_uint16_t l
 
 int ota_check_start(void)
 {
+    sys_set_remap_status(WORK_MODE_STS_REG_NO, OTA_STS_BPOS, 1);
     do
     {
         if (g_sys.config.ComPara.OTA_operate & 3)

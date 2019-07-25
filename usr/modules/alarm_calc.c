@@ -1049,15 +1049,22 @@ static uint16_t acl02(alarm_acl_status_st *acl_ptr)
     {
         return (ALARM_ACL_CLEARED);
     }
-    //水位
-    u16WL = Get_Water_level();
-    if ((u16WL & S_U))
+    if (!(g_sys.config.dev_mask.din[0] & S_M)) //源水箱2浮球
     {
-        data = 1;
+        data = 0;
     }
     else
     {
-        data = 0;
+        //水位
+        u16WL = Get_Water_level();
+        if ((u16WL & S_U))
+        {
+            data = 1;
+        }
+        else
+        {
+            data = 0;
+        }
     }
     return data;
 }
@@ -1065,39 +1072,40 @@ static uint16_t acl02(alarm_acl_status_st *acl_ptr)
 //ACL_E3，浮球异常
 static uint16_t acl03(alarm_acl_status_st *acl_ptr)
 {
-    uint8_t data = 0;
+    uint16_t data = 0;
     uint16_t u16WL;
 
     u16WL = Get_Water_level();
 
-    if (g_sys.config.dev_mask.din[0] & 0x40) //4浮球
+    if (g_sys.config.dev_mask.din[0] & D_ML) //4浮球
     {
         if ((u16WL & D_U) && (((u16WL & D_M) == 0) || ((u16WL & D_ML) == 0) || ((u16WL & D_L) == 0)))
         {
-            data = 1;
+            data |= 0x01;
         }
         else if ((u16WL & D_M) && (((u16WL & D_ML) == 0) || ((u16WL & D_L) == 0)))
         {
-            data = 1;
+            data |= 0x02;
         }
         else if ((u16WL & D_ML) && ((u16WL & D_L) == 0))
         {
-            data = 1;
+            data |= 0x04;
         }
-        else if ((u16WL & S_U) && (((u16WL & S_M) == 0) || ((u16WL & S_L) == 0)))
+        else if (((u16WL & S_U) && (((u16WL & S_M) == 0) || ((u16WL & S_L) == 0))) && (g_sys.config.dev_mask.din[0] & S_M))
         {
-
-            data = 1;
+            data |= 0x08;
         }
-        else if ((u16WL & S_M) && ((u16WL & S_L) == 0))
+        else if (((u16WL & S_M) && ((u16WL & S_L) == 0)) && (g_sys.config.dev_mask.din[0] & S_M))
         {
-
-            data = 1;
+            data |= 0x10;
+        }
+        else if (((u16WL & S_U) && ((u16WL & S_L) == 0)) && (!(g_sys.config.dev_mask.din[0] & S_M)))
+        {
+            data |= 0x20;
         }
         else if (g_sys.status.ComSta.u16Ain[AI_NTC4] == ABNORMAL_VALUE)
         {
-
-            data = 1;
+            data |= 0x40;
         }
         else
         {
@@ -1108,28 +1116,35 @@ static uint16_t acl03(alarm_acl_status_st *acl_ptr)
     {
         if ((u16WL & D_U) && (((u16WL & D_M) == 0) || ((u16WL & D_L) == 0)))
         {
-            data = 1;
+            data |= 0x100;
         }
         else if ((u16WL & D_M) && ((u16WL & D_L) == 0))
         {
-            data = 1;
+            data |= 0x200;
         }
-        else if ((u16WL & S_U) && (((u16WL & S_M) == 0) || ((u16WL & S_L) == 0)))
+        else if (((u16WL & S_U) && (((u16WL & S_M) == 0) || ((u16WL & S_L) == 0))) && (g_sys.config.dev_mask.din[0] & S_M))
         {
-
-            data = 1;
+            data |= 0x400;
         }
-        else if ((u16WL & S_M) && ((u16WL & S_L) == 0))
+        else if (((u16WL & S_M) && ((u16WL & S_L) == 0)) && (g_sys.config.dev_mask.din[0] & S_M))
         {
-
-            data = 1;
+            data |= 0x800;
+        }
+        else if (((u16WL & S_U) && ((u16WL & S_L) == 0)) && (!(g_sys.config.dev_mask.din[0] & S_M)))
+        {
+            data |= 0x1000;
         }
         else
         {
             data = 0;
         }
     }
-    //		rt_kprintf("BUFF = %x,u16WL = %x\n",BUFF,u16WL);
+
+    if (data)
+    {
+        data = ALARM_ACL_TRIGGERED;
+    }
+    //    rt_kprintf("u16WL = %x,data = %x\n",u16WL,data);
     return data;
 }
 

@@ -85,8 +85,8 @@ const pin_map_st out_pin_map_inst[Pin_Map_Out] = //数字输出Pin_Map
         {GPIO_Pin_1, GPIOB},  //DO16
         {GPIO_Pin_0, GPIOB},  //DO17
         {GPIO_Pin_5, GPIOC},  //DO18
-        {GPIO_Pin_14, GPIOC}, //DO21
-        {GPIO_Pin_15, GPIOC}, //DO22
+        {GPIO_Pin_14, GPIOC}, //DO19
+        {GPIO_Pin_15, GPIOC}, //DO20
         {GPIO_Pin_9, GPIOE},  //LOCKLED
         {GPIO_Pin_11, GPIOA}, //PWRCTRL
         {GPIO_Pin_13, GPIOC}, //LED,RUN
@@ -594,8 +594,8 @@ void di_sts_update(sys_reg_st *gds_sys_ptr)
     gds_sys_ptr->status.ComSta.u16Din_bitmap[0] = din_mask_bitmap[0] & dio_dev_inst.din.bitmap[0];
     gds_sys_ptr->status.ComSta.u16Din_bitmap[1] = din_mask_bitmap[1] & dio_dev_inst.din.bitmap[1];
 
-   // rt_kprintf("bitmap[0] = %X,u16Din_bitmap[0] = %X\n", dio_dev_inst.din.bitmap[0], gds_sys_ptr->status.ComSta.u16Din_bitmap[0]);
-   // rt_kprintf("bitmap[1] = %X,u16Din_bitmap[1] = %X\n", dio_dev_inst.din.bitmap[1], gds_sys_ptr->status.ComSta.u16Din_bitmap[1]);
+    // rt_kprintf("bitmap[0] = %X,u16Din_bitmap[0] = %X\n", dio_dev_inst.din.bitmap[0], gds_sys_ptr->status.ComSta.u16Din_bitmap[0]);
+    // rt_kprintf("bitmap[1] = %X,u16Din_bitmap[1] = %X\n", dio_dev_inst.din.bitmap[1], gds_sys_ptr->status.ComSta.u16Din_bitmap[1]);
 }
 
 void dio_set_do(uint16_t channel_id, BitAction data)

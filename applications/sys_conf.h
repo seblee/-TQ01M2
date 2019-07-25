@@ -31,6 +31,8 @@ enum
 
     DO_EL2_BPOS,      //电子锁2
     DO_RSV3_BPOS,     //预留
+    DO_RSV4_BPOS,     //预留
+    DO_RSV5_BPOS,     //预留
     DO_LED_LOCK_BPOS, //童锁LED DC5V
     DO_PWR_CTRL_BPOS, //12V电源控制,低电平有效
     DO_RSV_BPOS_0,    //预留
@@ -43,8 +45,6 @@ enum
     DO_RSV_BPOS_7,    //预留
     DO_RSV_BPOS_8,    //预留
     DO_RSV_BPOS_9,    //预留
-    DO_RSV_BPOS_10,   //预留
-    DO_RSV_BPOS_11,   //预留
 
     DO_FILLTER_DUMMY_BPOS,           //滤网
     DO_FILLTER_ELEMENT_DUMMY_BPOS_0, //滤芯  0
@@ -60,7 +60,7 @@ enum
 //L  双按键出水
 #define DO_WP2_BPOS DO_RSV2_BPOS //出水泵2
 #define DO_DV2_BPOS DO_RSV3_BPOS //出水阀2
- 
+
 #define DO_HEAT_FAN_BPOS DO_RSV2_BPOS //扇热风机
 //TEST
 #define DO_DWV_BPOS DO_DWP_BPOS    //循环阀//阀1
@@ -300,6 +300,7 @@ enum
     HEATING_STS_BPOS,   //加热
     EXITWATER_STS_BPOS, //外接水源
     NET_STS_BPOS,
+    OTA_STS_BPOS,
     ALARM_STUSE_BPOS = 14,
     ALARM_BEEP_BPOS = 15,
 };
@@ -674,15 +675,16 @@ typedef struct
     uint16_t u16SN_Code[4];            //SN码
     uint16_t u16M_Type;                //设备类型
     uint16_t u16Power_Mode;            //开关机
-    uint16_t u16Start_Temp;            //制水启动温度
+    uint16_t u16Start_Temp[2];         //制水启动温度
     uint16_t u16Start_Humidity;        //制水启动湿度
-    uint16_t u16Stop_Temp;             //制水停止温度
+    uint16_t u16Stop_Temp[2];          //制水停止温度
     uint16_t u16Stop_Humidity;         //制水停止湿度
     uint16_t u16Start_Defrost_Temp;    //除霜启动温度
     uint16_t u16Stop_Defrost_Temp;     //除霜停止温度
     uint16_t u16Sterilize_Mode;        //杀菌模式:BIT0-220V,BIT1-24V
     uint16_t u16Sterilize_Time[2];     //杀菌时间
     uint16_t u16Sterilize_Interval[2]; //杀菌间隔
+    uint16_t u16UV_Delay;              //UV关闭延时,MIN
     uint16_t u16Water_Ctrl;            //水路控制方案
     uint16_t u16Water_Mode;            //出水模式
     uint16_t u16Water_Flow;            //出水流量

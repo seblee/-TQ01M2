@@ -30,12 +30,14 @@ enum
     DI_HI_PRESS1_BPOS,
     DI_HI_PRESS2_BPOS,
     DI_Cold_1_BPOS,
+
     DI_Heat_BPOS,
     DI_Child_BPOS,
     DI_OPEN_BPOS,
     DI_Cold_2_BPOS,
     DI_FAN01_OD_BPOS,
     DI_WATER_LEAK_BPOS,
+
     DI_RESERVE_02,
     DI_RESERVE_03,
     DI_POWER_LOSS_BPOS, //电源掉电

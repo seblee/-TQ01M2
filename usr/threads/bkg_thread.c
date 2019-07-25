@@ -183,8 +183,8 @@ static void test_mode_init_data(void)
         g_sys.config.dev_mask.dout[1] = DO_MASK2;
         l_sys.bitmap[1][BITMAP_MANUAL] = DO_POWER_CTR_ONLY;
 
-        l_sys.bitmap[0][BITMAP_MANUAL] = (0x0001 << DO_UV1_BPOS) | (0x0001 << DO_WP_BPOS) | (0x0001 << DO_DV_BPOS) | (0x0001 << DO_WP2_BPOS) | (0x0001 << DO_PWP_BPOS);
-        l_sys.bitmap[1][BITMAP_MANUAL] = (0x0001 << (DO_DV2_BPOS >> 16));
+        l_sys.bitmap[0][BITMAP_MANUAL] = (0x0001 << DO_UV1_BPOS) | (0x0001 << DO_WP_BPOS) | (0x0001 << DO_DV_BPOS) | (0x0001 << DO_PWP_BPOS);
+        // l_sys.bitmap[1][BITMAP_MANUAL] = (0x0001<<(DO_DV2_BPOS>>16));
         break;
     case TEST_TANK: //抽空源水箱与饮水箱
         g_sys.config.dev_mask.ain = 0xffff;
@@ -196,8 +196,8 @@ static void test_mode_init_data(void)
         g_sys.config.dev_mask.dout[1] = DO_MASK2;
         l_sys.bitmap[1][BITMAP_MANUAL] = DO_POWER_CTR_ONLY;
 
-        l_sys.bitmap[0][BITMAP_MANUAL] = (0x0001 << DO_WP_BPOS) | (0x0001 << DO_DV_BPOS) | (0x0001 << DO_WP2_BPOS) | (0x0001 << DO_PWP_BPOS);
-        l_sys.bitmap[1][BITMAP_MANUAL] = (0x0001 << (DO_DV2_BPOS >> 16));
+        l_sys.bitmap[0][BITMAP_MANUAL] = (0x0001 << DO_WP_BPOS) | (0x0001 << DO_DV_BPOS) | (0x0001 << DO_PWP_BPOS);
+        // l_sys.bitmap[1][BITMAP_MANUAL] = (0x0001<<(DO_DV2_BPOS>>16));
         break;
     case TEST_HEAT_WATER: //出热水
         g_sys.config.dev_mask.ain = 0xffff;
@@ -638,6 +638,13 @@ static void sys_comp_cooldown(void)
     {
         l_sys.Pwp_Open_Time++;
     }
+
+    //UV延迟
+    if (l_sys.u16UV_Delay)
+    {
+        l_sys.u16UV_Delay--;
+    }
+
     return;
 }
 

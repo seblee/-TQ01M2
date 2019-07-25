@@ -333,6 +333,10 @@ uint16_t Get_Water_level(void)
     {
         u16Water_level &= ~S_M;
     }
+    if (!(g_sys.config.dev_mask.din[0] & S_M))
+    {
+        u16Water_level &= ~S_M;
+    }
 
     //S_U
     if (sys_get_di_sts(DI_SOURCE_UP_BPOS) == 0)
