@@ -904,6 +904,7 @@ typedef struct
     uint16_t TEST6;
     uint16_t REQ_TEST[3];
     uint16_t net_status;
+    uint16_t ota_status;
 } ComSta_st;
 
 typedef struct

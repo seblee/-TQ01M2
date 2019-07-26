@@ -105,10 +105,10 @@ void rt_hw_board_init()
     rt_console_set_device(RT_CONSOLE_DEVICE_NAME);
 #endif
 }
-
+long sys_version(void);
 int hw_drivers_init(void)
 {
-
+    sys_version();
     drv_adc_dma_init(); //模拟输入初始化
 
     drv_dio_init(); //数字输入输出初始化

@@ -246,7 +246,7 @@ void network_Serialize_inform_json(char **datapoint)
         goto __exit;
     }
 
-    rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", ((SOFTWARE_VER & 0xf000) >> 12), ((SOFTWARE_VER & 0x0f80) >> 7), ((SOFTWARE_VER & 0x007f) >> 0));
+    rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", VER_0, VER_1, VER_2);
 
     result = cJSON_AddStringToObject(JS_paprms, "version", versiontemp);
     if (result == NULL)
@@ -341,7 +341,7 @@ void network_Serialize_upgrade_json(char **datapoint)
     cJSON_AddStringToObject(root, "MCode", "035");
     cJSON_AddStringToObject(root, "versionName", SOFTWARE_VER_NAME);
     char versiontemp[10] = {0};
-    rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", ((SOFTWARE_VER & 0xf000) >> 12), ((SOFTWARE_VER & 0x0f80) >> 7), ((SOFTWARE_VER & 0x007f) >> 0));
+    rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", VER_0, VER_1, VER_2);
     cJSON_AddStringToObject(root, "versionCode", versiontemp);
     if (device_info.flag != IOT_SID_FLAG)
         goto __exit;
@@ -732,7 +732,7 @@ rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
                 }
                 rt_strncpy((*app_info)->version, js_version->valuestring, sizeof((*app_info)->version));
                 char versiontemp[10] = {0};
-                rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", ((SOFTWARE_VER & 0xf000) >> 12), ((SOFTWARE_VER & 0x0f80) >> 7), ((SOFTWARE_VER & 0x007f) >> 0));
+                rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", VER_0, VER_1, VER_2);
                 if (rt_strncmp(versiontemp, (*app_info)->version, sizeof((*app_info)->version)) == 0) //版本相同不升级 return null
                 {
                     rc = RT_EOK;

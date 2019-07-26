@@ -45,6 +45,7 @@
 #error "Please update the 'rtdbg.h' file to GitHub latest version (https://github.com/RT-Thread/rt-thread/blob/master/include/rtdbg.h)"
 #endif
 
+// #define HelloWorldTest
 /* Private macro -------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
@@ -186,8 +187,14 @@ int mqtt_client_init(MQTTClient *client, iotx_device_info_pt device_info_p)
 
     rt_memset(device_info_p, 0, sizeof(iotx_device_info_t));
     Conversion_modbus_2_ram((rt_uint8_t *)device_info_p, (rt_uint8_t *)g_sys.config.ComPara.device_info, sizeof(iotx_device_info_t));
+#ifdef HelloWorldTest
+    device_info_p->flag = IOT_SID_FLAG;
+    rt_snprintf(device_info_p->device_name, sizeof(device_info_p->device_name), "AWG-L28--TQTEST-000002");
+    rt_snprintf(device_info_p->product_key, sizeof(device_info_p->product_key), "rl0bGtKFCYA");
+    rt_snprintf(device_info_p->device_secret, sizeof(device_info_p->device_secret), "16q9CF9jojkaafVKq1ul2XaNMWDVcT1v");
+#endif
 
-    rt_snprintf(device_info_p->device_id, sizeof(device_connect.client_id), "rtthread%d", rt_tick_get());
+    rt_snprintf(device_info_p->device_id, sizeof(device_info_p->device_id), "rtthread%d", rt_tick_get());
     LOG_D("product_key:%s", device_info_p->product_key);
     LOG_D("device_name:%s", device_info_p->device_name);
     LOG_D("device_secret:%s", device_info_p->device_secret);

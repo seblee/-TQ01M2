@@ -534,6 +534,14 @@ const sts_reg_map_st status_reg_map_inst[STATUS_REG_MAP_NUM] = {
     {39, &g_sys.status.ComSta.u16PM25, 0},
     {40, &g_sys.status.ComSta.u16Ain[AI_NTC5], 0},
     {41, &g_sys.status.ComSta.u16Ain[AI_NTC6], 0},
+    {42, NULL, 0},
+    {43, NULL, 0},
+    {44, NULL, 0},
+    {45, &g_sys.status.ComSta.ota_status, 0},
+    {46, NULL, 0},
+    {47, NULL, 0},
+    {48, NULL, 0},
+    {49, NULL, 0},
 };
 
 /**
@@ -630,7 +638,7 @@ extern void rt_show_version(void);
 long sys_version(void)
 {
     rt_show_version();
-    rt_kprintf("formwire:%s,%02d.%02d.%02d\n", SOFTWARE_VER_NAME, ((SOFTWARE_VER & 0xf000) >> 12), ((SOFTWARE_VER & 0x0f80) >> 7), ((SOFTWARE_VER & 0x007f) >> 0));
+    rt_kprintf("formwire:%s,%02d.%02d.%02d\n", SOFTWARE_VER_NAME, VER_0, VER_1, VER_2);
 
     return 0;
 }
