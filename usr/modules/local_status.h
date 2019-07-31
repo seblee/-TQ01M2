@@ -163,6 +163,8 @@ typedef struct
     uint8_t u8CloseDelay;       //关闭延迟
     uint16_t u16UV_Delay;       //关闭延迟
     uint16_t u16WaterFlow;      //出水流量
+    uint8_t u8Storage_Status;   //贮存状态
+    uint8_t u8Storage_Fsm;      //贮存状态机
 } local_reg_st;
 
 enum

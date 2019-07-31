@@ -31,8 +31,6 @@ enum
 
     DO_EL2_BPOS,      //电子锁2
     DO_RSV3_BPOS,     //预留
-    DO_RSV4_BPOS,     //预留
-    DO_RSV5_BPOS,     //预留
     DO_LED_LOCK_BPOS, //童锁LED DC5V
     DO_PWR_CTRL_BPOS, //12V电源控制,低电平有效
     DO_RSV_BPOS_0,    //预留
@@ -45,6 +43,8 @@ enum
     DO_RSV_BPOS_7,    //预留
     DO_RSV_BPOS_8,    //预留
     DO_RSV_BPOS_9,    //预留
+    DO_RSV_BPOS_10,   //预留
+    DO_RSV_BPOS_11,   //预留
 
     DO_FILLTER_DUMMY_BPOS,           //滤网
     DO_FILLTER_ELEMENT_DUMMY_BPOS_0, //滤芯  0
@@ -60,17 +60,22 @@ enum
 //L  双按键出水
 #define DO_WP2_BPOS DO_RSV2_BPOS //出水泵2
 #define DO_DV2_BPOS DO_RSV3_BPOS //出水阀2
-
+ 
 #define DO_HEAT_FAN_BPOS DO_RSV2_BPOS //扇热风机
 //TEST
-#define DO_DWV_BPOS DO_DWP_BPOS    //循环阀//阀1
-#define DO_V3_BPOS DO_RSV2_BPOS    //阀3
-#define DO_V4_BPOS DO_RSV3_BPOS    //阀4
+#define DO_EV1_BPOS DO_DWP_BPOS    //循环阀//阀1
+#define DO_EV2_BPOS DO_DV_BPOS       //阀2
+#define DO_EV3_BPOS DO_RSV2_BPOS    //阀3
+#define DO_EV4_BPOS DO_RSV3_BPOS    //阀4
+
+#define DO_P1_BPOS DO_PWP_BPOS    //泵1
+#define DO_P2_BPOS DO_WP_BPOS    //泵2
+
 #define DO_BD_BPOS DO_EL1_BPOS     //冰胆
 #define DO_BD_FAN_BPOS DO_EL2_BPOS //冰胆风扇
 
 #define DO_UV24_BPOS DO_RSV2_BPOS //24V紫外灯
-#define DO_F24_BPOS DO_EL1_BPOS   //24V风机
+#define DO_F24_BPOS DO_EL1_BPOS   //24V风机,T8机组
 
 //application delay
 #define MODBUS_MASTER_THREAD_DELAY 500
@@ -715,6 +720,8 @@ typedef struct
     uint16_t u16HeatFan_StopTemp;      //热风机停止温度
     uint16_t OTA_operate;              //bit0:autoupdate enable,bit1:startupdate bit2:OTA Faild
     uint16_t u16WaterFlow;             //出水流量后开始制水
+    uint16_t u16Storage;             		//贮存
+    uint16_t u16StorageDealy[2];        //延时
     uint16_t u16CloseFrist;            //null
     uint16_t u16CloseDelay;            //null
     uint16_t u16TestEV[2];             //null

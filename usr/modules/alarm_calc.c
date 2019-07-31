@@ -223,7 +223,7 @@ const uint16_t ACL_CONF[ACL_TOTAL_NUM][ALARM_ACL_MAX] =
         6, ACL_ENMODE_OTHER, ACL_ENMODE_AUTO_RESET_ALARM, CRITICAL_ALARM_lEVEL, DEV_TYPE_OTHER,  //ACL_E6
         7, ACL_ENMODE_OTHER, ACL_ENMODE_AUTO_RESET_ALARM, CRITICAL_ALARM_lEVEL, DEV_TYPE_OTHER,  //ACL_FAN01_OD
         8, ACL_ENMODE_OTHER, ACL_ENMODE_AUTO_RESET_ALARM, CRITICAL_ALARM_lEVEL, DEV_TYPE_OTHER,  //ACL_E8
-        9, ACL_ENMODE_OTHER, ACL_ENMODE_AUTO_RESET_ALARM, CRITICAL_ALARM_lEVEL, DEV_TYPE_OTHER,  //ACL_E9
+        9, ACL_ENMODE_OTHER, ACL_ENMODE_HAND_RESET_ALARM, CRITICAL_ALARM_lEVEL, DEV_TYPE_OTHER,  //ACL_E9
         10, ACL_ENMODE_OTHER, ACL_ENMODE_AUTO_RESET_ALARM, CRITICAL_ALARM_lEVEL, DEV_TYPE_OTHER, //ACL_WATER_LEAK
         11, ACL_ENMODE_OTHER, ACL_ENMODE_AUTO_RESET_ALARM, CRITICAL_ALARM_lEVEL, DEV_TYPE_OTHER, //ACL_HI_PRESS1
         12, ACL_ENMODE_OTHER, ACL_ENMODE_AUTO_RESET_ALARM, CRITICAL_ALARM_lEVEL, DEV_TYPE_POWER, //ACL_HI_PRESS2
@@ -663,8 +663,9 @@ static void alarm_arbiration(void)
     {
         compress1_alarm = 0;
     }
-
-    if (get_alarm_bitmap(ACL_E7)) //风机
+//    if ((get_alarm_bitmap(ACL_E7))||(get_alarm_bitmap(ACL_E1) || get_alarm_bitmap(ACL_E2))) //风机
+//    if (get_alarm_bitmap(ACL_E7)) //风机
+    if ((get_alarm_bitmap(ACL_E7))||(get_alarm_bitmap(ACL_E9))) //风机			
     {
         close_dev = 1;
     }
@@ -1072,11 +1073,17 @@ static uint16_t acl02(alarm_acl_status_st *acl_ptr)
 //ACL_E3，浮球异常
 static uint16_t acl03(alarm_acl_status_st *acl_ptr)
 {
-    uint16_t data = 0;
+    uint16_t data;
     uint16_t u16WL;
 
+    // 解除 报警
+    if (acl_clear(acl_ptr))
+    {
+        return (ALARM_ACL_CLEARED);
+    }
     u16WL = Get_Water_level();
 
+		data = 0;
     if (g_sys.config.dev_mask.din[0] & D_ML) //4浮球
     {
         if ((u16WL & D_U) && (((u16WL & D_M) == 0) || ((u16WL & D_ML) == 0) || ((u16WL & D_L) == 0)))
@@ -1091,15 +1098,15 @@ static uint16_t acl03(alarm_acl_status_st *acl_ptr)
         {
             data |= 0x04;
         }
-        else if (((u16WL & S_U) && (((u16WL & S_M) == 0) || ((u16WL & S_L) == 0))) && (g_sys.config.dev_mask.din[0] & S_M))
+        else if (((u16WL & S_U) && (((u16WL & S_M) == 0) || ((u16WL & S_L) == 0)))&&(g_sys.config.dev_mask.din[0] & S_M))
         {
             data |= 0x08;
         }
-        else if (((u16WL & S_M) && ((u16WL & S_L) == 0)) && (g_sys.config.dev_mask.din[0] & S_M))
+        else if (((u16WL & S_M) && ((u16WL & S_L) == 0))&&(g_sys.config.dev_mask.din[0] & S_M))
         {
             data |= 0x10;
         }
-        else if (((u16WL & S_U) && ((u16WL & S_L) == 0)) && (!(g_sys.config.dev_mask.din[0] & S_M)))
+        else if (((u16WL & S_U) &&((u16WL & S_L) == 0))&&(!(g_sys.config.dev_mask.din[0] & S_M)))
         {
             data |= 0x20;
         }
@@ -1122,15 +1129,15 @@ static uint16_t acl03(alarm_acl_status_st *acl_ptr)
         {
             data |= 0x200;
         }
-        else if (((u16WL & S_U) && (((u16WL & S_M) == 0) || ((u16WL & S_L) == 0))) && (g_sys.config.dev_mask.din[0] & S_M))
+        else if (((u16WL & S_U) && (((u16WL & S_M) == 0) || ((u16WL & S_L) == 0)))&&(g_sys.config.dev_mask.din[0] & S_M))
         {
             data |= 0x400;
         }
-        else if (((u16WL & S_M) && ((u16WL & S_L) == 0)) && (g_sys.config.dev_mask.din[0] & S_M))
+        else if (((u16WL & S_M) && ((u16WL & S_L) == 0))&&(g_sys.config.dev_mask.din[0] & S_M))
         {
             data |= 0x800;
         }
-        else if (((u16WL & S_U) && ((u16WL & S_L) == 0)) && (!(g_sys.config.dev_mask.din[0] & S_M)))
+        else if (((u16WL & S_U)&& ((u16WL & S_L) == 0))&&(!(g_sys.config.dev_mask.din[0] & S_M)))
         {
             data |= 0x1000;
         }
@@ -1139,12 +1146,15 @@ static uint16_t acl03(alarm_acl_status_st *acl_ptr)
             data = 0;
         }
     }
-
-    if (data)
-    {
-        data = ALARM_ACL_TRIGGERED;
-    }
-    //    rt_kprintf("u16WL = %x,data = %x\n",u16WL,data);
+//    rt_kprintf("u16WL = %x,data = %x\n",u16WL,data);		
+		if(data)
+		{
+				data=ALARM_ACL_TRIGGERED;
+		}
+		else
+		{
+				data=ALARM_ACL_CLEARED;			
+		}
     return data;
 }
 

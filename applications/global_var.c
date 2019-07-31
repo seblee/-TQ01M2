@@ -112,7 +112,7 @@ const conf_reg_map_st conf_reg_map_inst[CONF_REG_MAP_NUM] = {
     {64, &g_sys.config.alarm[ACL_E9].alarm_param, 1, 65000, 240, 2, 1, NULL},
     {65, &g_sys.config.alarm[ACL_FILTER_ELEMENT_0_OT].alarm_param, 1, 65535, 2500, 2, 1, NULL},
     {66, &g_sys.config.ComPara.u16Clear_RT, 0, 0xFF, 0, 2, 1, NULL},
-    {67, &g_sys.config.ComPara.u16Clear_ALARM, 0, 0xFF, 0, 2, 1, NULL},
+    {CLEAR_ALARM, &g_sys.config.ComPara.u16Clear_ALARM, 0, 0xFF, 0, 2, 1, NULL},
     {68, &g_sys.config.ComPara.u16Set_Time[0], 0, 0xFFFF, 0, 2, 1, NULL},
     {69, &g_sys.config.ComPara.u16Set_Time[1], 0, 0xFFFF, 0, 2, 1, NULL},
     {70, &g_sys.config.ComPara.u16Start_Delay, 1, 600, 180, 1, 1, NULL},
@@ -168,9 +168,9 @@ const conf_reg_map_st conf_reg_map_inst[CONF_REG_MAP_NUM] = {
     {117, NULL, 0, 3600, 0, 0, 1, NULL},
     {118, NULL, 0, 3600, 0, 0, 1, NULL},
     {119, NULL, 0, 3600, 0, 0, 1, NULL},
-    {120, NULL, 0, 3600, 0, 0, 1, NULL},
-    {121, NULL, 0, 3600, 0, 0, 1, NULL},
-    {122, NULL, 0, 3600, 0, 0, 1, NULL},
+    {EE_STORAGE, &g_sys.config.ComPara.u16Storage, 		0, 1,     0,   2, 1, NULL},
+    {121, &g_sys.config.ComPara.u16StorageDealy[0], 	1, 10000, 80, 2, 1, NULL},
+    {122, &g_sys.config.ComPara.u16StorageDealy[1], 	1, 10000, 10, 2, 1, NULL},
     {123, NULL, 0, 3600, 0, 0, 1, NULL},
     {124, NULL, 0, 3600, 0, 0, 1, NULL},
     {125, NULL, 0, 3600, 0, 0, 1, NULL},
@@ -637,7 +637,7 @@ uint16_t set_load_flag(uint8_t ee_load_flag)
 extern void rt_show_version(void);
 long sys_version(void)
 {
-    rt_show_version();
+    //rt_show_version();
     rt_kprintf("formwire:%s,%02d.%02d.%02d\n", SOFTWARE_VER_NAME, VER_0, VER_1, VER_2);
 
     return 0;

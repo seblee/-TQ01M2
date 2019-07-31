@@ -2,6 +2,10 @@
 #define __REQ_EXE_H__
 #include "stdint.h"
 
+
+//#define WV_TEST 1	//制冷阀常闭，反向
+
+
 #define HUM_CURRENT_UNIT 1.19
 enum
 {
@@ -41,6 +45,23 @@ enum
     FSM_FAN_NORM,
     FSM_FAN_SHUT
 };
+
+/************************************************************************/
+//贮存状态机
+enum
+{
+    WATER_STROGE_IDLE = 0,
+    WATER_STROGE_1,
+    WATER_STROGE_2,
+    WATER_STROGE_3,
+    WATER_STROGE_4,
+    WATER_STROGE_5,
+    WATER_STROGE_6,
+    WATER_STROGE_7,
+    WATER_STROGE_8,
+    WATER_STROGE_STOP,
+};
+
 //出水模式
 enum
 {
@@ -56,6 +77,7 @@ enum
     NORMAL_ICE = 0x01, //阀冰水
     BD_ICE = 0x02,     //冰胆
 };
+
 #define BD_TIME 180
 #define BD_DELAY 60
 
@@ -172,4 +194,5 @@ void req_execution(int16_t target_req_temp, int16_t target_req_hum);
 void req_bitmap_op(uint8_t component_bpos, uint8_t action);
 void Close_DIS_PWR(void);
 void UV_req_exe(uint8_t u8Type);
+uint8_t Sys_Get_Storage_Signal(void);
 #endif //__REQ_EXE_H__
