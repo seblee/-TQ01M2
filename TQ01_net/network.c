@@ -11,7 +11,7 @@
  * @Last Modified by: Seblee
  * @Last Modified time: 2018-11-21 16:05:07
  ****************************************************************************
-**/
+ **/
 
 /* Private include -----------------------------------------------------------*/
 #include "network.h"
@@ -35,7 +35,8 @@
 #include <rtdbg.h>
 
 #ifndef LOG_D
-#error "Please update the 'rtdbg.h' file to GitHub latest version (https://github.com/RT-Thread/rt-thread/blob/master/include/rtdbg.h)"
+#error \
+    "Please update the 'rtdbg.h' file to GitHub latest version (https://github.com/RT-Thread/rt-thread/blob/master/include/rtdbg.h)"
 #endif
 
 #define DEVICE_NAME device_info.device_name
@@ -84,17 +85,19 @@ void NetWork_DIR_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
     RCC_AHB1PeriphClockCmd(TQ01E1_PORT_RCC, ENABLE);
+    RCC_AHB1PeriphClockCmd(SIM7600_RESET_PORT_RCC, ENABLE);
 
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; //上拉
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;  //上拉
 
     GPIO_InitStructure.GPIO_Pin = TQ01E1_DIR_PIN;
     GPIO_Init(TQ01E1_DIR_PORT, &GPIO_InitStructure);
     DIR_8266();
-    rt_pin_mode(AT_DEVICE_RESET_PIN, PIN_MODE_OUTPUT);
 
+    GPIO_InitStructure.GPIO_Pin = SIM7600_RESET_PIN;
+    GPIO_Init(SIM7600_RESET_PORT, &GPIO_InitStructure);
     SIM7600_SET();
 }
 
@@ -134,7 +137,7 @@ _exit:
 
     return;
 }
-//INIT_APP_EXPORT(net_thread_entry);
+// INIT_APP_EXPORT(net_thread_entry);
 void mqtt_send_cmd(const char *send_str)
 {
     MQTT_CMD(&client, send_str);
@@ -169,7 +172,7 @@ MSH_CMD_EXPORT(mq_cmd, publish mqtt msg);
  * @Created  : 2018-09-20 by seblee
  * @Brief    :
  * @Version  : V1.0
-**/
+ **/
 void network_Serialize_init_json(char **datapoint)
 {
     char sign_hex[128] = {0};
@@ -181,7 +184,7 @@ void network_Serialize_init_json(char **datapoint)
 
     /* declare a few. */
     cJSON *root = NULL, *result;
-    msgid = mqtt_client_packet_id();
+    msgid       = mqtt_client_packet_id();
     /* Our "Video" datatype: */
     root = cJSON_CreateObject();
 
@@ -196,18 +199,20 @@ void network_Serialize_init_json(char **datapoint)
     struct tm ti;
     char Timestamp_str[15] = {0};
     current_systime_get(&ti);
-    rt_snprintf(Timestamp_str, sizeof(Timestamp_str), "%04d%02d%02d%02d%02d%02d",
-                ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec);
+    rt_snprintf(Timestamp_str, sizeof(Timestamp_str), "%04d%02d%02d%02d%02d%02d", ti.tm_year + 1900, ti.tm_mon + 1,
+                ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec);
 
     result = cJSON_AddStringToObject(root, "Timestamp", Timestamp_str);
 
-    rt_snprintf(sign_hex, sizeof(sign_hex), "DeviceName=%s&MCode=001&ProductKey=%s&RequestNo=%s&Timestamp=%s&Key=123456", DEVICE_NAME, PRODUCT_KEY, RequestNoStr, Timestamp_str);
+    rt_snprintf(sign_hex, sizeof(sign_hex),
+                "DeviceName=%s&MCode=001&ProductKey=%s&RequestNo=%s&Timestamp=%s&Key=123456", DEVICE_NAME, PRODUCT_KEY,
+                RequestNoStr, Timestamp_str);
     utils_md5((const unsigned char *)sign_hex, strlen(sign_hex), sign);
     // LOG_D("[%d] MD5(%s)", rt_tick_get(), sign_hex);
     rt_memset(sign_hex, 0, sizeof(sign_hex));
     for (i = 0; i < 16; ++i)
     {
-        sign_hex[i * 2] = utils_hb2hex(sign[i] >> 4);
+        sign_hex[i * 2]     = utils_hb2hex(sign[i] >> 4);
         sign_hex[i * 2 + 1] = utils_hb2hex(sign[i]);
     }
     // LOG_D("[%d] MD5=%s", sign_hex);
@@ -225,7 +230,7 @@ void network_Serialize_init_json(char **datapoint)
  * @Created  : 2018-12-05 by seblee
  * @Brief    : serialize json
  * @Version  : V1.0
-**/
+ **/
 void network_Serialize_inform_json(char **datapoint)
 {
     char versiontemp[10] = {0};
@@ -268,7 +273,7 @@ __exit:
  * @Created  : 2018-09-21 by seblee
  * @Brief    : serialize parameter json report
  * @Version  : V1.0
-**/
+ **/
 #include "mb_event_cpad.h"
 void network_Serialize_para_json(char **datapoint)
 {
@@ -282,7 +287,7 @@ void network_Serialize_para_json(char **datapoint)
 
     /* declare a few. */
     cJSON *root = NULL;
-    msgid = mqtt_client_packet_id();
+    msgid       = mqtt_client_packet_id();
     /* Our "Video" datatype: */
     root = cJSON_CreateObject();
     //汉字
@@ -292,8 +297,8 @@ void network_Serialize_para_json(char **datapoint)
     struct tm ti;
     char Timestamp_str[15] = {0};
     current_systime_get(&ti);
-    rt_snprintf(Timestamp_str, sizeof(Timestamp_str), "%04d%02d%02d%02d%02d%02d",
-                ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec);
+    rt_snprintf(Timestamp_str, sizeof(Timestamp_str), "%04d%02d%02d%02d%02d%02d", ti.tm_year + 1900, ti.tm_mon + 1,
+                ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec);
 
     cJSON_AddStringToObject(root, "Timestamp", Timestamp_str);
     cJSON_AddStringToObject(root, "Settingversion", Timestamp_str);
@@ -302,7 +307,7 @@ void network_Serialize_para_json(char **datapoint)
     cpad_eMBRegHoldingCB((unsigned char *)sign_Cache, 100, 80, CPAD_MB_REG_READ);
     for (i = 0; i < 160; ++i)
     {
-        StrCache[i * 2] = utils_hb2hex(sign_Cache[i] >> 4);
+        StrCache[i * 2]     = utils_hb2hex(sign_Cache[i] >> 4);
         StrCache[i * 2 + 1] = utils_hb2hex(sign_Cache[i]);
     }
 
@@ -311,14 +316,16 @@ void network_Serialize_para_json(char **datapoint)
     cJSON_AddStringToObject(root, "ProductKey", PRODUCT_KEY);
     cJSON_AddStringToObject(root, "DeviceName", DEVICE_NAME);
 
-    rt_snprintf(sign_Cache, sizeof(sign_Cache), "DeviceName=%s&MCode=007&ProductKey=%s&RequestNo=%d&Setaddrstart=100&Settingleng=80&Settingmsg=%s&Settingversion=%s&Timestamp=%s&Key=123456",
+    rt_snprintf(sign_Cache, sizeof(sign_Cache),
+                "DeviceName=%s&MCode=007&ProductKey=%s&RequestNo=%d&Setaddrstart=100&Settingleng=80&Settingmsg=%s&"
+                "Settingversion=%s&Timestamp=%s&Key=123456",
                 DEVICE_NAME, PRODUCT_KEY, msgid, StrCache, Timestamp_str, Timestamp_str);
 
     utils_md5((const unsigned char *)sign_Cache, strlen(sign_Cache), sign);
     rt_memset(sign_hex, 0, sizeof(sign_hex));
     for (i = 0; i < 16; ++i)
     {
-        sign_hex[i * 2] = utils_hb2hex(sign[i] >> 4);
+        sign_hex[i * 2]     = utils_hb2hex(sign[i] >> 4);
         sign_hex[i * 2 + 1] = utils_hb2hex(sign[i]);
     }
     // LOG_D("[%d] MD5=%s", sign_hex);
@@ -353,7 +360,7 @@ void network_Serialize_upgrade_json(char **datapoint)
     rt_memset(sign_hex, 0, sizeof(sign_hex));
     for (rt_uint8_t i = 0; i < 16; ++i)
     {
-        sign_hex[i * 2] = utils_hb2hex(sign[i] >> 4);
+        sign_hex[i * 2]     = utils_hb2hex(sign[i] >> 4);
         sign_hex[i * 2 + 1] = utils_hb2hex(sign[i]);
     }
     // LOG_D("[%d] MD5=%s", sign_hex);
@@ -373,12 +380,12 @@ __exit:
  * @Created  : 2018-09-25 by seblee
  * @Brief    :
  * @Version  : V1.0
-**/
+ **/
 rt_err_t network_water_notice_parse(const char *Str)
 {
     rt_err_t rc;
     cJSON *root = RT_NULL;
-    root = cJSON_Parse(Str);
+    root        = cJSON_Parse(Str);
     if (!root)
     {
         LOG_E("[%d] get root faild !", rt_tick_get());
@@ -416,7 +423,7 @@ exit:
  * @Created  : 2018-09-26 by seblee
  * @Brief    : serialize reoprt json
  * @Version  : V1.0
-**/
+ **/
 void network_Serialize_report_json(char **datapoint, rt_uint8_t topic_type)
 {
     char sign_hex[33] = {0};
@@ -442,8 +449,8 @@ void network_Serialize_report_json(char **datapoint, rt_uint8_t topic_type)
     struct tm ti;
     char Timestamp_str[15] = {0};
     current_systime_get(&ti);
-    rt_snprintf(Timestamp_str, sizeof(Timestamp_str), "%04d%02d%02d%02d%02d%02d",
-                ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec);
+    rt_snprintf(Timestamp_str, sizeof(Timestamp_str), "%04d%02d%02d%02d%02d%02d", ti.tm_year + 1900, ti.tm_mon + 1,
+                ti.tm_mday, ti.tm_hour, ti.tm_min, ti.tm_sec);
 
     cJSON_AddStringToObject(root, "Timestamp", Timestamp_str);
     if (topic_type == REALTIME_REPORT)
@@ -457,7 +464,7 @@ void network_Serialize_report_json(char **datapoint, rt_uint8_t topic_type)
         cpad_eMBRegHoldingCB((unsigned char *)sign_Cache, 502, 18, CPAD_MB_REG_READ);
         for (i = 0; i < 36; ++i)
         {
-            StrCache[i * 2] = utils_hb2hex(sign_Cache[i] >> 4);
+            StrCache[i * 2]     = utils_hb2hex(sign_Cache[i] >> 4);
             StrCache[i * 2 + 1] = utils_hb2hex(sign_Cache[i]);
         }
     }
@@ -466,7 +473,7 @@ void network_Serialize_report_json(char **datapoint, rt_uint8_t topic_type)
         cpad_eMBRegHoldingCB((unsigned char *)sign_Cache, 500, 50, CPAD_MB_REG_READ);
         for (i = 0; i < 100; ++i)
         {
-            StrCache[i * 2] = utils_hb2hex(sign_Cache[i] >> 4);
+            StrCache[i * 2]     = utils_hb2hex(sign_Cache[i] >> 4);
             StrCache[i * 2 + 1] = utils_hb2hex(sign_Cache[i]);
         }
     }
@@ -478,16 +485,22 @@ void network_Serialize_report_json(char **datapoint, rt_uint8_t topic_type)
         cJSON_AddStringToObject(root, "Statusleng", "50");
 
     if (topic_type == REALTIME_REPORT)
-        rt_snprintf(sign_Cache, sizeof(sign_Cache), "DeviceName=%s&MCode=008&ProductKey=%s&RequestNo=%d&Statusaddrstart=502&Statusleng=18&Statusmsg=%s&Timestamp=%s&Key=123456", DEVICE_NAME, PRODUCT_KEY, msgid, StrCache, Timestamp_str);
+        rt_snprintf(sign_Cache, sizeof(sign_Cache),
+                    "DeviceName=%s&MCode=008&ProductKey=%s&RequestNo=%d&Statusaddrstart=502&Statusleng=18&Statusmsg=%s&"
+                    "Timestamp=%s&Key=123456",
+                    DEVICE_NAME, PRODUCT_KEY, msgid, StrCache, Timestamp_str);
     else
-        rt_snprintf(sign_Cache, sizeof(sign_Cache), "DeviceName=%s&MCode=009&ProductKey=%s&RequestNo=%d&Statusaddrstart=500&Statusleng=50&Statusmsg=%s&Timestamp=%s&Key=123456", DEVICE_NAME, PRODUCT_KEY, msgid, StrCache, Timestamp_str);
+        rt_snprintf(sign_Cache, sizeof(sign_Cache),
+                    "DeviceName=%s&MCode=009&ProductKey=%s&RequestNo=%d&Statusaddrstart=500&Statusleng=50&Statusmsg=%s&"
+                    "Timestamp=%s&Key=123456",
+                    DEVICE_NAME, PRODUCT_KEY, msgid, StrCache, Timestamp_str);
 
     utils_md5((const unsigned char *)sign_Cache, strlen(sign_Cache), sign);
     // LOG_D("[%d] MD5(%s)", rt_tick_get(), sign_Cache);
     rt_memset(sign_hex, 0, sizeof(sign_hex));
     for (i = 0; i < 16; ++i)
     {
-        sign_hex[i * 2] = utils_hb2hex(sign[i] >> 4);
+        sign_hex[i * 2]     = utils_hb2hex(sign[i] >> 4);
         sign_hex[i * 2 + 1] = utils_hb2hex(sign[i]);
     }
     cJSON_AddItemToObject(root, "Sign", cJSON_CreateString(sign_hex));
@@ -504,7 +517,7 @@ void network_Serialize_report_json(char **datapoint, rt_uint8_t topic_type)
  * @Created  : 2018-09-27 by seblee
  * @Brief    : get interval time
  * @Version  : V1.0
-**/
+ **/
 void network_get_interval(unsigned int *real, unsigned int *timing)
 {
     // *real = REALTIME_INTERVAL_DEFAULT;
@@ -534,7 +547,7 @@ void network_get_interval(unsigned int *real, unsigned int *timing)
  * @Created  : 2018-09-27 by seblee
  * @Brief    :
  * @Version  : V1.0
-**/
+ **/
 rt_err_t network_parameter_get_parse(const char *Str)
 {
     rt_err_t rc;
@@ -573,7 +586,7 @@ rt_err_t network_parameter_get_parse(const char *Str)
  * @Created  : 2018-09-28 by seblee
  * @Brief    :
  * @Version  : V1.0
-**/
+ **/
 rt_err_t network_parameter_set_parse(const char *Str)
 {
     rt_err_t rc;
@@ -639,7 +652,8 @@ rt_err_t network_parameter_set_parse(const char *Str)
                     // rt_kprintf("%02x", Settingmsg_data_buf[i]);
                 }
 
-                cpad_eMBRegHoldingCB((unsigned char *)Settingmsg_data_buf, Setaddrstart, Settingleng, CPAD_MB_REG_MULTIPLE_WRITE);
+                cpad_eMBRegHoldingCB((unsigned char *)Settingmsg_data_buf, Setaddrstart, Settingleng,
+                                     CPAD_MB_REG_MULTIPLE_WRITE);
                 if (Settingmsg_data_buf)
                     rt_free(Settingmsg_data_buf);
             }
@@ -664,7 +678,7 @@ rt_err_t network_parameter_set_parse(const char *Str)
  * @Created  : 2018-09-27 by seblee
  * @Brief    :
  * @Version  : V1.0
-**/
+ **/
 rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
 {
     rt_err_t rc;
@@ -705,7 +719,7 @@ rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
                 rt_memset(*app_info, 0, sizeof(app_struct));
 
                 (*app_info)->app_flag = FLASH_APP_FLAG_WORD;
-                cJSON *js_size = cJSON_GetObjectItem(js_data, "size");
+                cJSON *js_size        = cJSON_GetObjectItem(js_data, "size");
                 if (js_size == RT_NULL)
                 {
                     rc = -RT_ERROR;
@@ -733,7 +747,8 @@ rt_err_t network_upgrade_parse(const char *Str, app_struct **app_info)
                 rt_strncpy((*app_info)->version, js_version->valuestring, sizeof((*app_info)->version));
                 char versiontemp[10] = {0};
                 rt_snprintf(versiontemp, sizeof(versiontemp), "%02d.%02d.%02d", VER_0, VER_1, VER_2);
-                if (rt_strncmp(versiontemp, (*app_info)->version, sizeof((*app_info)->version)) == 0) //版本相同不升级 return null
+                if (rt_strncmp(versiontemp, (*app_info)->version, sizeof((*app_info)->version)) ==
+                    0)  //版本相同不升级 return null
                 {
                     rc = RT_EOK;
                     rt_free(*app_info);
@@ -781,7 +796,7 @@ __exit:
  * @Created  : 2018-09-27 by seblee
  * @Brief    :
  * @Version  : V1.0
-**/
+ **/
 rt_err_t network_broadcast_parse(const char *Str, app_struct **app_info)
 {
     rt_err_t rc;
@@ -874,7 +889,7 @@ __exit:
  * @Created  : 2018-10-18 by seblee
  * @Brief    : parse register_json data
  * @Version  : V1.0
-**/
+ **/
 rt_err_t network_register_parse(const char *Str, iotx_device_info_t *dev_info)
 {
     rt_err_t rc;
@@ -978,7 +993,7 @@ rt_err_t Conversion_modbus_2_ram(rt_uint8_t *dst, rt_uint8_t *src, rt_uint16_t l
 
     for (i = 0; i < (len / 2); i++)
     {
-        *(dst + 2 * i) = *(src + 2 * i + 1);
+        *(dst + 2 * i)     = *(src + 2 * i + 1);
         *(dst + 2 * i + 1) = *(src + 2 * i);
     }
     return 0;
@@ -1025,7 +1040,7 @@ rt_err_t ota_write_operate_flag(rt_uint16_t flag)
     rt_uint8_t temp[2];
     temp[0] = (rt_uint8_t)(flag >> 8);
     temp[1] = (rt_uint8_t)(flag & 0xff);
-    err = cpad_eMBRegHoldingCB(temp, 376, 1, CPAD_MB_REG_MULTIPLE_WRITE);
+    err     = cpad_eMBRegHoldingCB(temp, 376, 1, CPAD_MB_REG_MULTIPLE_WRITE);
     return -err;
 }
 void ota_restart(void)
